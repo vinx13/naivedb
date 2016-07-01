@@ -1,6 +1,7 @@
-#include <tclDecls.h>
-#include "storage.h"
 #include <cassert>
+
+#include "storage.h"
+#include "mmap.h"
 
 namespace medb {
 
@@ -54,7 +55,7 @@ Location FileMgr::allocDataOn(int bucket, int size) {
     // remained size is too small, so the whole block is allocated
     // leaving record->block_size unchanged
 
-    return record;
+    return loc;
 }
 
 void FileMgr::collectSpace(const Location &loc) {
@@ -66,7 +67,7 @@ void FileMgr::collectSpace(const Location &loc) {
 }
 
 Location FileMgr::allocIndex(int size) {
-    return medb::Location();
+    return indexRecordAt(getIndexFileHeader()->empty_index_node_ofs)->
 }
 
 void FileMgr::removeFragments() {
@@ -100,7 +101,7 @@ void FileMgr::createIndexFile() {
 }
 
 void *FileMgr::openFile(const std::string &filename) const {
-    void *p = nullptr; //TODO
+    void *p = MemoryMapper::getInstance()->open(filename);
     assert(p);
     return p;
 }
@@ -120,13 +121,13 @@ int FileMgr::getBucketIndex(int min_size) {
 DataRecord *FileMgr::dataRecordAt(const Location &loc) {
     assert(!loc.isNull());
     void *f = getDataFile(loc.file_no);
-    return static_cast<DataRecord *>(f + loc.offset);
+    return reinterpret_cast<DataRecord *>(static_cast<char *>(f) + loc.offset);
 }
 
 IndexRecord *FileMgr::indexRecordAt(int offset) {
     assert(offset > 0);
     void *f = getIndexFile();
-    return static_cast<IndexRecord *>(f + offset);
+    return reinterpret_cast<IndexRecord *>(static_cast<char *>(f) + offset);
 }
 
 bool FileMgr::isReusableSize(int size) const {
@@ -134,7 +135,7 @@ bool FileMgr::isReusableSize(int size) const {
 }
 
 IndexFileHeader *FileMgr::getIndexFileHeader() {
-    return static_cast<IndexFileHeader *>(getIndexFile());
+    return reinterpret_cast<IndexFileHeader *>(getIndexFile());
 }
 
 

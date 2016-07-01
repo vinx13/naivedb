@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "bplus.h"
+
 namespace medb {
 
 const int NumBucket = 19;
@@ -23,10 +25,11 @@ struct Location {
 };
 
 struct IndexFileHeader {
-    int file_size;
+    int index_file_size;
     int num_data_files;
     Location empty_heads[NumBucket];
     Location tree_root_;
+    int empty_index_node_ofs;
 };
 
 struct DataRecord {
@@ -43,11 +46,6 @@ struct DataRecord {
 
 struct IndexRecord {
     int prev, next;
-    int data_size;
-
-    void *getData() {
-        return reinterpret_cast<void *>(&data_size + 1);
-    }
 };
 
 #pragma pack()
@@ -75,6 +73,10 @@ public:
     // make sure the size of index file is larger than min_size
     void reserveIndexSpace(int min_size);
 
+    DataRecord *dataRecordAt(const Location &loc);
+
+    IndexRecord *indexRecordAt(int offset);
+
 private:
     std::string database_;
 
@@ -97,10 +99,6 @@ private:
 
     // get the index of the list that contains empty blocks that are not less than min_size
     int getBucketIndex(int min_size);
-
-    DataRecord *dataRecordAt(const Location &loc);
-
-    IndexRecord *indexRecordAt(int offset);
 
     Location allocDataOn(int bucket, int size);
 
