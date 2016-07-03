@@ -17,8 +17,8 @@ void Database::get(const char *key, void **value, int *len) {
     tree_->get(key, value, len);
 }
 
-void Database::set(const char *key, const void *value, int len, bool override = false) {
-    tree_->set(key, value, len, override, override);
+void Database::set(const char *key, const void *value, int len, bool overwrite = false) {
+    tree_->set(key, value, len, overwrite);
 }
 
 void Database::remove(const char *key) {

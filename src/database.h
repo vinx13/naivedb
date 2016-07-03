@@ -16,7 +16,7 @@ public:
 
     void get(const char *key, void **value, int *len);
 
-    void set(const char *key, const void *value, int len);
+    void set(const char *key, const void *value, int len, bool overwrite);
 
     void remove(const char *key);
 
