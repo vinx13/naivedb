@@ -1,6 +1,6 @@
 #include <cassert>
 
-#include "storage.h"
+#include "file.h"
 #include "mmap.h"
 
 namespace medb {
@@ -49,7 +49,7 @@ Location FileMgr::allocDataOn(int bucket, int size) {
         loc_remained.offset += size;
         DataRecord *record_remained = dataRecordAt(loc_remained);
         record_remained->block_size = size_remained;
-        collectSpace(loc);
+        collectDataSpace(loc);
     }
     // otherwise:
     // remained size is too small, so the whole block is allocated
@@ -58,7 +58,7 @@ Location FileMgr::allocDataOn(int bucket, int size) {
     return loc;
 }
 
-void FileMgr::collectSpace(const Location &loc) {
+void FileMgr::collectDataSpace(const Location &loc) {
     assert(!loc.isNull());
     IndexFileHeader *header = getIndexFileHeader();
     DataRecord *record = dataRecordAt(loc);
@@ -66,16 +66,37 @@ void FileMgr::collectSpace(const Location &loc) {
     record->next = header->empty_heads[bucket];
 }
 
-Location FileMgr::allocIndex(int size) {
-    return indexRecordAt(getIndexFileHeader()->empty_index_node_ofs)->
+void FileMgr::collectIndexSpace(int offset) {
+    int *next = static_cast<int *>(indexRecordAt(offset)->getData());
+    IndexFileHeader *header = getIndexFileHeader();
+    *next = header->empty_index_node_ofs;
+    header->empty_index_node_ofs = offset;
+}
+
+
+int FileMgr::allocIndex() {
+    int head_ofs = getIndexFileHeader()->empty_index_node_ofs;
+    IndexRecord *empty_head = indexRecordAt(head_ofs);
+    int next_ofs = static_cast<int>(empty_head->data);
+
+    if (next_ofs < 0) {
+        //TODO grow index file
+    } else {
+        getIndexFileHeader()->empty_index_node_ofs = next_ofs;
+    }
+    return head_ofs;
 }
 
 void FileMgr::removeFragments() {
-
+    // TODO
 }
 
 void FileMgr::reserveIndexSpace(int min_size) {
-
+    int size = getIndexFileHeader()->index_file_size;
+    if (size >= min_size)
+        return;
+    for (; size < min_size; size <<= 1);
+    MemoryMapper::getInstance()->grow(getIndexFileName(), min_size);
 }
 
 std::string FileMgr::getDataFileName(int file_no) const {
@@ -92,10 +113,10 @@ void FileMgr::createDataFile() {
 }
 
 void FileMgr::createIndexFile() {
-    IndexFileHeader * header = getIndexFileHeader();
+    IndexFileHeader *header = getIndexFileHeader();
     header->num_data_files = 0;
     // TODO init header
-    for(int i = 0; i < NumBucket; i++) {
+    for (int i = 0; i < NumBucket; i++) {
         header->empty_heads[i].file_no = -1;
     }
 }
@@ -111,7 +132,7 @@ int FileMgr::getBucketIndex(int min_size) {
     for (int i = 0; i < NumBucket; i++) {
         if (BucketSizes[i] >= min_size &&
             !header->empty_heads[i].isNull() &&
-            dataRecordAt(header->empty_heads[i])->block_size>min_size) {
+            dataRecordAt(header->empty_heads[i])->block_size > min_size) {
             return i;
         }
     }
