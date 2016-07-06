@@ -3,10 +3,7 @@
 
 #include "file.h"
 
-// define data of nodes that should be stored in file
-
-namespace medb{
-
+namespace medb {
 
 const int TreeOrder = 4;
 
@@ -16,6 +13,15 @@ struct InternalNodeData {
     bool is_leaf;
     Location keys[TreeOrder - 1];
     int children_offset[TreeOrder];
+
+    void init() {
+        is_leaf = false;
+        for (int i = 0; i < TreeOrder - 1; i++) {
+            keys[i].init();
+            children_offset[i] = -1;
+        }
+        children_offset[TreeOrder - 1] = -1;
+    }
 };
 
 struct LeafNodeData {
@@ -23,6 +29,14 @@ struct LeafNodeData {
     int next;
     Location keys[TreeOrder];
     Location values[TreeOrder];
+
+    void init() {
+        is_leaf = true;
+        for (int i = 0; i < TreeOrder; i++) {
+            keys[i].init();
+            values[i].init();
+        }
+    }
 };
 
 #pragma pack()
