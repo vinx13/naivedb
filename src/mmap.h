@@ -15,23 +15,49 @@ typedef HANDLE FD;
 typedef int FD;
 #endif
 
-// represent disk files that are mapped into memory
-class MemoryMapper {
+class MemoryMappedFileImpl;
+class MemoryMappedFile {
 public:
-    static std::shared_ptr<MemoryMapper> getInstance();
+    MemoryMappedFile(const std::string &filename);
+    ~MemoryMappedFile();
 
-    // create or open a file and map it to memory, if len is 0, default file size is used
-    void *open(const std::string &filename, int len = 0);
+    void open();
 
-    // extend the mapped file, use open if the file hasn't been openned
-    void *grow(const std::string &filename, int new_len);
+    void *get();
+
+    void grow(int new_size);
+
+    bool isExist();
+
+    void create(int size);
+
+    void close();
 
 private:
-    MemoryMapper();
+    std::string filename_;
+    void *view_;
+    int size_;
+    int fd_;
+    MemoryMappedFileImpl *impl_;
+};
 
-    void closeAll();
 
-    std::shared_ptr<MemoryMapper> instance__;
+class MemoryMappedFileImpl{
+    friend class MemoryMappedFile;
+private:
+    void extendSize(int fd, int size);
+
+    int openFile(const std::string &filename);
+
+    void closeFile(int fd);
+
+    int getFileSize(int fd);
+
+    void *map(int fd, int size);
+
+    void unmap(void *view, int size);
+
+    bool isExist(const std::string &filename);
 };
 
 }
