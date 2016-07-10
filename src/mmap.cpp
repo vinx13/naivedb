@@ -4,7 +4,7 @@
 namespace medb {
 
 
-MemoryMappedFile::MemoryMappedFile(const std::string &filename) : filename_(filename), size_(0), fd_(-1) {
+MemoryMappedFile::MemoryMappedFile(const std::string &filename) : filename_(filename), size_(0), fd_(-1) ,view_(nullptr){
     impl_ = new MemoryMappedFileImpl();
 }
 
@@ -16,9 +16,10 @@ MemoryMappedFile::~MemoryMappedFile() {
     delete impl_;
 }
 
-void *MemoryMappedFile::get() {
+void *MemoryMappedFile::get(int offset) {
     assert(view_);
-    return view_;
+    assert(offset >= 0);
+    return static_cast<void*>(static_cast<char *>(view_)+offset);
 }
 
 
@@ -49,7 +50,7 @@ void MemoryMappedFile::create(int size) {
     fd_ = impl_->openFile(filename_);
     impl_->extendSize(fd_, size);
     size_ = size;
-    impl_->map(fd_, size_);
+    view_ = impl_->map(fd_, size_);
 }
 
 

@@ -23,7 +23,7 @@ public:
 
     void open();
 
-    void *get();
+    void *get(int offset = 0);
 
     void grow(int new_size);
 

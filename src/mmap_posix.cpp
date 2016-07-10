@@ -27,7 +27,7 @@ void MemoryMappedFileImpl::closeFile(int fd) {
 
 int MemoryMappedFileImpl::getFileSize(int fd) {
     assert(fd >= 0);
-    stat status;
+    struct stat status;
     if (fstat(fd, &status) < 0) {
         //TODO
     }
@@ -46,7 +46,7 @@ void MemoryMappedFileImpl::extendSize(int fd, int size) {
 }
 
 bool MemoryMappedFileImpl::isExist(const std::string &filename) {
-    return access(filename.c_str(), R_OK | W_OK);
+    return access(filename.c_str(), R_OK | W_OK) == 0;
 }
 
 void *MemoryMappedFileImpl::map(int fd, int size) {
