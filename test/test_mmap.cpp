@@ -34,7 +34,7 @@ TEST(MMapTest, BasicRead) {
     MemoryMappedFile file(filename);
     ASSERT_NO_THROW(file.open());
     void *view = file.get();
-    std::memcmp(view, s, sizeof(s));
+    ASSERT_FALSE(std::memcmp(view, s, sizeof(s)));
 
     std::remove(filename);
 }
