@@ -1,83 +1,28 @@
-#ifndef MEDB_FILE_H
-#define MEDB_FILE_H
+#ifndef NAIVEDB_FILE_H
+#define NAIVEDB_FILE_H
 
-#include "storage.h"
+#include <cassert>
+#include "mmap.h"
 
-namespace medb{
-
-#pragma pack(1)
-struct Location {
-    int file_no;
-    int offset;
-
-    void init() { file_no = -1; }
-
-    bool isNull() const { return file_no < 0; }
-};
-#pragma pack()
+namespace naivedb {
 
 
-class FileMgr {
+class DBStore;
+
+class File {
 public:
-    static const std::vector<int> BucketSizes;
+    File(const std::string &filename, DBStore *db_store) : file_(filename), db_store_(db_store) { }
 
-    FileMgr(const std::string &database);
+protected:
 
-    void *getIndexFile();
+    MemoryMappedFile file_;
+    DBStore *db_store_;
 
-    void *getDataFile(int file_no);
+    bool isExist();
 
-    // allocate a block not less than min_size in data file, a new file may be created if no enough space is available
-    Location allocData(int min_size);
-
-    // allocate a block with specified size in index file
-    int allocIndex();
-
-    // add the block with space given by dataRecordAt(loc)->block_size to head of empty record lists for next allocation
-    void collectDataSpace(const Location &loc);
-
-    // add the block in index file to head of empty record lists for next allocation
-    void collectIndexSpace(int offset);
-
-    // remove discontinuous space in index file
-    void removeFragments();
-
-    // make sure the size of index file is larger than min_size
-    void reserveIndexSpace(int min_size);
-
-    DataRecord *dataRecordAt(const Location &loc);
-
-    IndexRecord *indexRecordAt(int offset);
-
-private:
-    std::string database_;
-
-    void *index_file_;
-
-    std::vector<void *> data_files_;
-
-    std::string getDataFileName(int file_no) const;
-
-    std::string getIndexFileName() const;
-
-    void *openFile(const std::string &filename) const;
-
-    void createDataFile();
-
-    void createIndexFile();
-
-    // decide whether block with specific size is large enough for next allocation
-    bool isReusableSize(int size) const;
-
-    // get the index of the list that contains empty blocks that are not less than min_size
-    int getBucketIndex(int min_size);
-
-    Location allocDataOn(int bucket, int size);
-
-    IndexFileHeader *getIndexFileHeader();
 };
 
 
 }
 
-#endif //MEDB_FILE_H
+#endif //NAIVEDB_FILE_H

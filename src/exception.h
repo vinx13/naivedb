@@ -6,7 +6,7 @@
 namespace naivedb {
 
 struct NaivedbException : std::exception {
-    const char *what() const {
+    const char *what() const noexcept {
         return "Database exception.";
     }
 };
@@ -22,4 +22,5 @@ struct AllocException : NaivedbException {
 struct SizeLimitExceptino : NaivedbException {
 };
 
+}
 #endif //MEDB_EXCEPTION_H
