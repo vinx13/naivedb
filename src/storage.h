@@ -1,12 +1,13 @@
-#ifndef MEDB_STORAGE_H
-#define MEDB_STORAGE_H
+#ifndef NAIVEDB_STORAGE_H
+#define NAIVEDB_STORAGE_H
 
 #include <string>
 #include <vector>
 
 #include "bplusdata.h"
+#include "location.h"
 
-namespace medb {
+namespace naivedb {
 
 const int NumBucket = 19;
 const int BucketSizes[] = {
@@ -28,7 +29,7 @@ struct IndexFileHeader {
 };
 
 struct DataRecord {
-    int block_size;
+    int block_size; // size of this record (excluding 'block_size') and empty space after this record
     union {
         int data_size; // for non-empty record
         Location next; // for empty record
@@ -40,7 +41,10 @@ struct DataRecord {
 };
 
 struct IndexRecord {
-    char data[max(sizeof(InternalNodeData), sizeof(LeafNodeData))];
+    union {
+        int next;
+        char data[max(sizeof(InternalNodeData), sizeof(LeafNodeData))];
+    };
 
     void *getData() {
         return reinterpret_cast<void *>(data);
@@ -52,4 +56,4 @@ struct IndexRecord {
 
 }
 
-#endif //MEDB_STORAGE_H
+#endif //NAIVEDB_STORAGE_H
