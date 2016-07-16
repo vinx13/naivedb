@@ -3,23 +3,23 @@
 
 #include <exception>
 
-namespace medb {
+namespace naivedb {
 
-struct MedbException : std::exception {
+struct NaivedbException : std::exception {
     const char *what() const {
         return "Database exception.";
     }
 };
 
-struct DuplicateException : std::exception {
+struct DuplicateException : NaivedbException {
 };
 
-struct SizeLimitException : std::exception {
+struct SizeLimitException : NaivedbException {
 };
 
-struct AllocException : std::exception {
+struct AllocException : NaivedbException {
 };
-
-}
+struct SizeLimitExceptino : NaivedbException {
+};
 
 #endif //MEDB_EXCEPTION_H
