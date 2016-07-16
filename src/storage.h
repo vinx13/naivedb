@@ -24,7 +24,7 @@ struct IndexFileHeader {
     int index_file_size;
     int num_data_files;
     Location empty_heads[NumBucket];
-    int tree_root;
+    int tree_root, first_leaf;
     int empty_index_node_ofs;
 };
 

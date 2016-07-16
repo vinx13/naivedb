@@ -78,7 +78,7 @@ void IndexFile::initHeader() {
     header->empty_index_node_ofs = sizeof(*header);
     header->index_file_size = DefaultIndexFileSize; // FIXME
     header->num_data_files = 0;
-    header->tree_root = -1;
+    header->tree_root = header->first_leaf = -1;
 }
 
 void IndexFile::addToEmptyHeads(const Location &loc) {

@@ -21,7 +21,7 @@ DBStore::~DBStore() {
 void DBStore::openAllFiles() {
     index_file_ = new IndexFile(getIndexFileName(), this);
     int num_files = index_file_->getHeader()->num_data_files;
-    for(int i = 0 ; i < num_files; i++) {
+    for (int i = 0; i < num_files; i++) {
         data_files_.push_back(new DataFile(getDataFileName(i), i, this));
     }
 }
@@ -120,6 +120,25 @@ DataRecord *DBStore::dataRecordAt(const Location &loc) {
 
 IndexRecord *DBStore::indexRecordAt(int offset) {
     return index_file_->recordAt(offset);
+}
+
+
+int DBStore::getFirseLeaf() {
+    return getIndexFile()->getHeader()->first_leaf;
+}
+
+void DBStore::setFirstLeaf(int offset) {
+    assert(offset >= 0);
+    getIndexFile()->getHeader()->first_leaf = offset;
+}
+
+int DBStore::getRoot() {
+    return getIndexFile()->getHeader()->tree_root;
+}
+
+void DBStore::setRoot(int offset) {
+    assert(offset >= 0);
+    getIndexFile()->getHeader()->tree_root;
 }
 
 

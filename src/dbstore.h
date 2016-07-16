@@ -8,7 +8,9 @@
 namespace naivedb {
 
 class IndexFile;
+
 class DataFile;
+
 struct IndexRecord;
 struct DataRecord;
 
@@ -49,6 +51,14 @@ public:
     IndexFile *getIndexFile();
 
     DataFile *getDataFile(int file_no);
+
+    int getFirseLeaf();
+
+    void setFirstLeaf(int offset);
+
+    int getRoot();
+
+    void setRoot(int offset);
 
 private:
     std::string database_;
