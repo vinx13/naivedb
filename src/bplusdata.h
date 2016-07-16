@@ -1,9 +1,9 @@
-#ifndef MEDB_BPLUSDATA_H
-#define MEDB_BPLUSDATA_H
+#ifndef NAIVEDB_BPLUSDATA_H
+#define NAIVEDB_BPLUSDATA_H
 
 #include "file.h"
 
-namespace medb {
+namespace naivedb {
 
 const int TreeOrder = 4;
 
@@ -43,4 +43,4 @@ struct LeafNodeData {
 
 
 }
-#endif //MEDB_BPLUSDATA_H
+#endif // NAIVEDB_BPLUSDATA_H

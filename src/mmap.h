@@ -1,12 +1,12 @@
-#ifndef MEDB_MMAP_H
-#define MEDB_MMAP_H
+#ifndef NAIVEDB_MMAP_H
+#define NAIVEDB_MMAP_H
 
 #include <memory>
 #include <map>
 #include <string>
 #include <tuple>
 
-namespace medb {
+namespace naivedb {
 
 #ifdef _WIN32
 #include <windows.h>
@@ -62,4 +62,4 @@ private:
 
 }
 
-#endif //MEDB_MMAP_H
+#endif //NAIVEDB_MMAP_H

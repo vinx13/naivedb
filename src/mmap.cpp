@@ -1,7 +1,7 @@
 #include <cassert>
 #include "mmap.h"
 
-namespace medb {
+namespace naivedb {
 
 
 MemoryMappedFile::MemoryMappedFile(const std::string &filename) : filename_(filename), size_(0), fd_(-1) ,view_(nullptr){

@@ -1,6 +1,6 @@
 #include "database.h"
 
-namespace medb {
+namespace naivedb {
 
 Database::Database(const std::string &database) : db_name_(database) {
     db_store_ = new DBStore(database);

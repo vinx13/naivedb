@@ -8,7 +8,7 @@
 
 #include "mmap.h"
 
-namespace medb {
+namespace naivedb {
 
 
 int MemoryMappedFileImpl::openFile(const std::string &filename) {

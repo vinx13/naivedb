@@ -4,7 +4,7 @@
 #include <cstring>
 #include "mmap.h"
 
-using namespace medb;
+using namespace naivedb;
 
 TEST(MMapTest, CheckExist) {
     char *filename = std::tmpnam(nullptr);

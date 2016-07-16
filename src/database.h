@@ -1,12 +1,12 @@
-#ifndef MEDB_DATABASE_H
-#define MEDB_DATABASE_H
+#ifndef NAIVEDB_DATABASE_H
+#define NAIVEDB_DATABASE_H
 
 #include "storage.h"
 #include "file.h"
 #include "bplus.h"
 #include <memory>
 
-namespace medb {
+namespace naivedb {
 
 class Database {
 public:
@@ -32,4 +32,4 @@ private:
 
 }
 
-#endif //MEDB_DATABASE_H
+#endif //NAIVEDB_DATABASE_H
