@@ -2,7 +2,7 @@
 
 #include "indexfile.h"
 #include "dbstore.h"
-#include "storage.h""
+#include "storage.h"
 
 namespace naivedb {
 
@@ -10,7 +10,16 @@ namespace naivedb {
 const int DefaultIndexFileSize = 1024 * 1024;
 
 IndexFile::IndexFile(const std::string &filename, DBStore *db_store) : File(filename, db_store) {
+    if (!isExist()) {
+        file_.create(DefaultIndexFileSize);
+        init();
+    } else {
+        file_.open();
+    }
+}
 
+IndexFile::~IndexFile() {
+    file_.close();
 }
 
 IndexFileHeader *IndexFile::getHeader() {

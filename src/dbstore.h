@@ -18,6 +18,8 @@ public:
 
     DBStore(const std::string &database);
 
+    ~DBStore();
+
     // allocate a block not less than min_size in data_ file, a new file may be created if no enough space is available
     Location allocData(int min_size);
 
@@ -58,6 +60,10 @@ private:
     Location allocDataOn(int bucket, int size);
 
     int createDataFile();
+
+    void openAllFiles();
+
+    void closeAllFiles();
 };
 
 }

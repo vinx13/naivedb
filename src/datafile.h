@@ -8,9 +8,10 @@ namespace naivedb {
 
 class DataFile : public File {
 public:
-    static const int FileSize;
 
     DataFile(const std::string &filename, int file_no, DBStore *db_store);
+
+    ~DataFile();
 
     void init();
 

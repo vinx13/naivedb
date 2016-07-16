@@ -3,7 +3,6 @@
 #include "dbstore.h"
 #include "indexfile.h"
 #include "datafile.h"
-#include "storage.h"
 #include "exception.h"
 
 
@@ -11,6 +10,28 @@ namespace naivedb {
 
 
 DBStore::DBStore(const std::string &database) : database_(database) {
+    openAllFiles();
+
+}
+
+DBStore::~DBStore() {
+    closeAllFiles();
+}
+
+void DBStore::openAllFiles() {
+    index_file_ = new IndexFile(getIndexFileName(), this);
+    int num_files = index_file_->getHeader()->num_data_files;
+    for(int i = 0 ; i < num_files; i++) {
+        data_files_.push_back(new DataFile(getDataFileName(i), i, this));
+    }
+}
+
+void DBStore::closeAllFiles() {
+
+    delete index_file_;
+    for (auto data_file : data_files_) {
+        delete data_file;
+    }
 }
 
 IndexFile *DBStore::getIndexFile() {

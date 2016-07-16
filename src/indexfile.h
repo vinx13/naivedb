@@ -17,6 +17,8 @@ public:
 
     IndexFile(const std::string &filename, DBStore *db_store);
 
+    ~IndexFile();
+
     IndexFileHeader *getHeader();
 
     void init();
