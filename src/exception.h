@@ -1,5 +1,5 @@
-#ifndef MEDB_EXCEPTION_H
-#define MEDB_EXCEPTION_H
+#ifndef NAIVEDB_EXCEPTION_H
+#define NAIVEDB_EXCEPTION_H
 
 #include <exception>
 
@@ -21,4 +21,4 @@ struct AllocException : NaivedbException {
 };
 
 }
-#endif //MEDB_EXCEPTION_H
+#endif //NAIVEDB_EXCEPTION_H
