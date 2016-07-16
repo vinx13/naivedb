@@ -13,8 +13,6 @@ TEST(MMapTest, CheckExist) {
 
     MemoryMappedFile file(filename);
     ASSERT_TRUE(file.isExist());
-
-    std::remove(filename);
 }
 
 
@@ -35,8 +33,6 @@ TEST(MMapTest, BasicRead) {
     ASSERT_NO_THROW(file.open());
     void *view = file.get();
     ASSERT_FALSE(std::memcmp(view, s, sizeof(s)));
-
-    std::remove(filename);
 }
 
 
@@ -55,8 +51,6 @@ TEST(MMapTest, BasicWrite) {
         is.read(reinterpret_cast<char *>(&i), sizeof(i));
         ASSERT_EQ(i, *it);
     }
-
-    std::remove(filename);
 }
 
 TEST(MMapTest, RandomWrite) {
@@ -78,6 +72,4 @@ TEST(MMapTest, RandomWrite) {
     int n_read;
     is.read(reinterpret_cast<char *>(&n_read), sizeof(n_read));
     ASSERT_EQ(n, n_read);
-
-    std::remove(filename);
 }
