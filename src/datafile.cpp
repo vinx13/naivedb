@@ -34,6 +34,7 @@ int DataFile::allocAt(int offset, int size) {
 
     if (!isReusableSize(remained_size))return -1;
     int remained_offset = offset + sizeof(record->block_size) + size;
+    record->block_size = size;
     recordAt(remained_offset)->block_size = remained_size - sizeof(record->block_size);
     return remained_offset;
 }

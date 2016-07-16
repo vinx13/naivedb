@@ -71,10 +71,12 @@ Location DBStore::allocData(int min_size) {
         }
     }
     assert(size_to_alloc < dataRecordAt(loc)->block_size);
+
     index_file_->removeEmptyLocation(bucket);
 
     int remained_offset = data_files_[loc.file_no]->allocAt(0, size_to_alloc);
-    if (remained_offset > 0) {
+    dataRecordAt(loc)->data_size = min_size; // min_size is size of data, which may be less than size_to_alloc
+    if (remained_offset >= 0) {
         index_file_->addToEmptyHeads(Location(loc.file_no, remained_offset));
     }
     return loc;

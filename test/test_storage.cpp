@@ -55,8 +55,13 @@ TEST(StorageTest, GrowIndexFile) {
 TEST(StorageTest, AllocData) {
     DBStore db_store(std::tmpnam(nullptr));
     EXPECT_THROW(db_store.allocData(DefaultDataFileSize * 2), SizeLimitException);
+
     Location loc;
     EXPECT_NO_THROW((loc = db_store.allocData(1024)));
+    EXPECT_FALSE(loc.isNull());
+    DataRecord *record= db_store.dataRecordAt(loc);
+    EXPECT_EQ(1024,record->data_size);
+    EXPECT_TRUE(record->block_size >= 1024);
     EXPECT_EQ(0,loc.file_no);
     EXPECT_EQ(0,loc.offset);
 }
