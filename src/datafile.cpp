@@ -2,12 +2,12 @@
 
 namespace naivedb {
 
-const int DefaultDataFileSize = 1024*1024;
 
 DataFile::DataFile(const std::string &filename, int file_no, DBStore *db_store) :
     File(filename, db_store), file_no_(file_no) {
-    if(~file_.isExist()){
+    if(!file_.isExist()){
         file_.create(DefaultDataFileSize);
+        init();
     } else {
         file_.open();
     }
@@ -15,7 +15,7 @@ DataFile::DataFile(const std::string &filename, int file_no, DBStore *db_store) 
 
 void DataFile::init() {
     DataRecord *first = recordAt(0);
-    first->block_size = DefaultDataFileSize;
+    first->block_size = DefaultDataFileSize - sizeof(first->block_size);
 }
 
 bool DataFile::isReusableSize(int size) const {
@@ -23,7 +23,7 @@ bool DataFile::isReusableSize(int size) const {
 }
 
 DataRecord *DataFile::recordAt(int offset) {
-    assert(offset > 0);
+    assert(offset >= 0);
     return reinterpret_cast<DataRecord *>(file_.get(offset));
 }
 

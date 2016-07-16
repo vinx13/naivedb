@@ -19,8 +19,6 @@ struct SizeLimitException : NaivedbException {
 
 struct AllocException : NaivedbException {
 };
-struct SizeLimitExceptino : NaivedbException {
-};
 
 }
 #endif //MEDB_EXCEPTION_H

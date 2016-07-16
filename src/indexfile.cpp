@@ -7,8 +7,6 @@
 namespace naivedb {
 
 
-const int DefaultIndexFileSize = 1024 * 1024;
-
 IndexFile::IndexFile(const std::string &filename, DBStore *db_store) : File(filename, db_store) {
     if (!isExist()) {
         file_.create(DefaultIndexFileSize);
@@ -89,11 +87,12 @@ void IndexFile::addToEmptyHeads(const Location &loc) {
     DataRecord *record = db_store_->dataRecordAt(loc);
     int bucket = getBucketIndex(record->block_size);
     record->next = header->empty_heads[bucket];
+    header->empty_heads[bucket] = loc;
 }
 
 
 Location IndexFile::getEmptyLocation(int bucket) {
-    assert(bucket > 0 && bucket < NumBucket);
+    assert(bucket >= 0 && bucket < NumBucket);
     return getHeader()->empty_heads[bucket];
 }
 
@@ -134,7 +133,7 @@ void IndexFile::initEmptyRecords(int index) {
     while (index < size) {
         IndexRecord *record = recordAt(index);
         int next_ofs = index + record_size;
-        record->next = next_ofs < size ? next_ofs : -1;
+        record->next = next_ofs + record_size < size ? next_ofs : -1;
         index += record_size;
     }
 }

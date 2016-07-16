@@ -33,10 +33,10 @@ public:
     void collectIndexSpace(int offset);
 
     // remove discontinuous space in index file
-    void removeFragments();
+    // void removeFragments();
 
     // make sure the size of index file is larger than min_size
-    void reserveIndexSpace(int min_size);
+    void reserveIndexSpace(int min_size); // TODO
 
     DataRecord *dataRecordAt(const Location &loc);
 

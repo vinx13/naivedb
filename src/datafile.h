@@ -6,12 +6,13 @@
 
 namespace naivedb {
 
+
+const int DefaultDataFileSize = 8*1024*1024;
+
 class DataFile : public File {
 public:
 
     DataFile(const std::string &filename, int file_no, DBStore *db_store);
-
-    ~DataFile();
 
     void init();
 

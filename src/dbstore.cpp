@@ -40,7 +40,7 @@ IndexFile *DBStore::getIndexFile() {
 
 DataFile *DBStore::getDataFile(int file_no) {
     assert(file_no >= 0 && file_no < data_files_.size());
-    return data_files_[file_no];
+    return data_files_[file_no]; // file_no starts from zero
 }
 
 
@@ -103,9 +103,8 @@ std::string DBStore::getIndexFileName() const {
 
 int DBStore::createDataFile() {
     IndexFileHeader *header = index_file_->getHeader();
-    int file_no = ++header->num_data_files;
+    int file_no = header->num_data_files++;
     data_files_.emplace_back(new DataFile(getDataFileName(file_no), file_no, this));
-    data_files_.back()->init();
     Location loc;
     loc.file_no = file_no;
     loc.offset = 0;
