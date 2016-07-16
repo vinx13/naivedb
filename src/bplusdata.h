@@ -2,6 +2,8 @@
 #define NAIVEDB_BPLUSDATA_H
 
 #include "file.h"
+#include "location.h"
+#include "storage.h"
 
 namespace naivedb {
 
