@@ -70,7 +70,8 @@ Location DBStore::allocData(int min_size) {
             throw SizeLimitException();
         }
     }
-    assert(size_to_alloc < dataRecordAt(loc)->block_size);
+    int block_size = dataRecordAt(loc)->block_size;
+    assert(size_to_alloc <= block_size);
 
     index_file_->removeEmptyLocation(bucket);
 
