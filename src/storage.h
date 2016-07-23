@@ -50,7 +50,7 @@ struct IndexRecord {
     };
 
     BPlusNode *getData() {
-        return reinterpret_cast<void *>(data);
+        return &data;
     }
 };
 

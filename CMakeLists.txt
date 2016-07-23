@@ -7,9 +7,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
 set(SOURCE_FILES
         src/mmap.cpp
         src/mmap_posix.cpp
-        src/dbstore.cpp
-        src/indexfile.cpp
         src/datafile.cpp
+        src/file.cpp
+        src/indexfile.cpp
         )
 
 set(TEST_FILES
