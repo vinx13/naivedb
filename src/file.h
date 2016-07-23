@@ -2,23 +2,47 @@
 #define NAIVEDB_FILE_H
 
 #include <cassert>
+#include <vector>
 #include "mmap.h"
+#include "location.h"
+#include "storage.h"
+#include "datafile.h"
 
 namespace naivedb {
 
 
 class DBStore;
 
-class File {
+
+class FileMgr {
 public:
-    File(const std::string &filename, DBStore *db_store) : file_(filename), db_store_(db_store) { }
+    FileMgr(const std::string &prefix, int file_size, DBStore *db_store);
+
+    virtual ~FileMgr() {
+        closeAllFiles();
+    }
+
+    void openAllFiles(int num_files);
+
+    void closeAllFiles();
 
 protected:
 
-    MemoryMappedFile file_;
-    DBStore *db_store_;
+    virtual void initFile(int file_no) = 0;
 
-    bool isExist();
+    const std::string prefix_;
+    DBStore *db_store_;
+    std::vector<MemoryMappedFile *> files_;
+    int file_size_;
+
+    void createFile();
+
+    void *get(const Location &location);
+
+    std::string getFileName(int file_no);
+
+
+    FileHeader *getFileHeader();
 
 };
 
