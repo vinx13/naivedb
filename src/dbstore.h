@@ -3,77 +3,53 @@
 
 #include <vector>
 #include <string>
-#include "location.h"
+#include <memory>
+#include "storage.h"
+
 
 namespace naivedb {
 
-class IndexFile;
 
-class DataFile;
+class IndexFileMgr;
 
-struct IndexRecord;
-struct DataRecord;
+class DataFileMgr;
+
 
 class DBStore {
 public:
-    static const std::vector<int> BucketSizes;
 
     DBStore(const std::string &database);
 
-    ~DBStore();
+    IndexRecord *indexRecordAt(const Location &location);
 
-    // allocate a block not less than min_size in data_ file, a new file may be created if no enough space is available
-    Location allocData(int min_size);
+    DataRecord *dataRecordAt(const Location &location);
 
-    // allocate a block with specified size in index file
-    int allocIndex();
+    void saveData(const void *data, int len);
 
-    // add the block with space given by dataRecordAt(loc)->block_size to head of empty record lists for next allocation
-    void collectDataSpace(const Location &loc);
+    Location getRoot();
 
-    // add the block in index file to head of empty record lists for next allocation
-    void collectIndexSpace(int offset);
+    void setRoot(const Location &location);
 
-    // remove discontinuous space in index file
-    // void removeFragments();
+    Location getFirstLeaf();
 
-    // make sure the size of index file is larger than min_size
-    void reserveIndexSpace(int min_size); // TODO
+    void setFirstLeaf(const Location &location);
 
-    DataRecord *dataRecordAt(const Location &loc);
-
-    IndexRecord *indexRecordAt(int offset);
-
-    std::string getDataFileName(int file_no) const;
-
-    std::string getIndexFileName() const;
-
-    IndexFile *getIndexFile();
-
-    DataFile *getDataFile(int file_no);
-
-    int getFirseLeaf();
-
-    void setFirstLeaf(int offset);
-
-    int getRoot();
-
-    void setRoot(int offset);
+    Location allocIndex();
 
 private:
     std::string database_;
+    std::unique_ptr<IndexFileMgr> index_file_;
+    std::unique_ptr<DataFileMgr> data_file_;
 
-    IndexFile *index_file_;
+    std::string getIndexPrefix() const;
 
-    std::vector<DataFile *> data_files_;
+    std::string getDataPrefix() const;
 
-    Location allocDataOn(int bucket, int size);
+    Location allocData(int min_size);
 
-    int createDataFile();
+    void collectIndex(const Location &location);
 
-    void openAllFiles();
-
-    void closeAllFiles();
+    void collectData(const Location &location);
 };
 
 }
