@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <datafile.h>
-
+#include <iostream>
 #include "dbstore.h"
 #include "indexfile.h"
 
@@ -51,4 +51,14 @@ TEST(DataFileTest, Collect) {
     Location loc2 = file_mgr.alloc(size);
     EXPECT_EQ(loc2.file_no, loc.file_no);
     EXPECT_EQ(loc2.offset, loc.offset);
+}
+
+TEST(DBStoreTest, Save) {
+    int magic1 = 0x01314242, magic2 = 0x02313144;
+    DBStore db_store(std::tmpnam(nullptr));
+
+    Location loc1 = db_store.saveData(reinterpret_cast<void *>(&magic1), sizeof(magic1)),
+    loc2=db_store.saveData(reinterpret_cast<void *>(&magic2), sizeof(magic2));
+    EXPECT_EQ(0,std::memcmp(db_store.dataRecordAt(loc1)->getData(), reinterpret_cast<void *>(&magic1), sizeof(magic1)));
+    EXPECT_EQ(0,std::memcmp(db_store.dataRecordAt(loc2)->getData(), reinterpret_cast<void *>(&magic2), sizeof(magic2)));
 }

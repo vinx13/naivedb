@@ -34,6 +34,12 @@ public:
 
     Location allocIndex();
 
+    Location allocData(int min_size);
+
+    void collectIndex(const Location &location);
+
+    void collectData(const Location &location);
+
 private:
     std::string database_;
     std::unique_ptr<IndexFileMgr> index_file_;
@@ -43,11 +49,6 @@ private:
 
     std::string getDataPrefix() const;
 
-    Location allocData(int min_size);
-
-    void collectIndex(const Location &location);
-
-    void collectData(const Location &location);
 };
 
 

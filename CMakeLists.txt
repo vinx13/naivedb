@@ -8,9 +8,10 @@ set(SOURCE_FILES
         src/mmap.cpp
         src/mmap_posix.cpp
         src/datafile.cpp
+        src/dbstore.cpp
         src/file.cpp
         src/indexfile.cpp
-        )
+        src/bplusnode.cpp)
 
 set(TEST_FILES
         test/test_mmap.cpp

@@ -41,6 +41,7 @@ struct DataRecord {
     void *getData() {
         return reinterpret_cast<void *>(&data_size + 1);
     }
+    static const int NonEmptyHeaderSize = sizeof(int) *2; // block_size  + data_size
 };
 
 struct IndexRecord {

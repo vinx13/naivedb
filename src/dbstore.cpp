@@ -30,9 +30,10 @@ IndexRecord *DBStore::indexRecordAt(const Location &location) {
 }
 
 Location DBStore::saveData(const void *data, int len) {
-    Location loc = data_file_->alloc(len);
+    Location loc = data_file_->alloc(len + DataRecord::NonEmptyHeaderSize);
     DataRecord *record = dataRecordAt(loc);
     record->data_size = len;
+
     std::memcpy(record->getData(), data,len);
     return loc;
 }
