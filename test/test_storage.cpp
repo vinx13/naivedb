@@ -1,77 +1,43 @@
 #include <gtest/gtest.h>
 #include <datafile.h>
-#include <exception.h>
 
-#include "storage.h"
 #include "dbstore.h"
 #include "indexfile.h"
 
 using namespace naivedb;
 
-int countRecords(DBStore *db_store, int start) {
-    int count = 1;
-    IndexRecord *record = db_store->indexRecordAt(start);
-    while (record->next > 0) {
-        ++count;
-        record = db_store->indexRecordAt(record->next);
-    }
-    return count;
-};
-
-TEST(StorageTest, InitIndexFile) {
-    DBStore db_store(std::tmpnam(nullptr));
-    int ofs = db_store.getIndexFile()->getHeader()->empty_index_node_ofs;
-    int count = 1;
-
-    int num_records = countRecords(&db_store, ofs);
-    int expect = (DefaultIndexFileSize - sizeof(IndexFileHeader)) / sizeof(IndexRecord);
-    EXPECT_EQ(expect, num_records);
+TEST(IndexFileTest, Alloc) {
+    IndexFileMgr file_mgr(std::tmpnam(nullptr));
+    file_mgr.init();
+    Location loc = file_mgr.alloc();
+    EXPECT_EQ(1, loc.file_no);
+    EXPECT_EQ(0, loc.offset);
+    Location loc2 = file_mgr.alloc();
+    EXPECT_EQ(1, loc2.file_no);
+    EXPECT_EQ(sizeof(IndexRecord), loc2.offset);
 }
 
-TEST(StorageTest, AllocIndex) {
-    DBStore db_store(std::tmpnam(nullptr));
-    int index = db_store.allocIndex();
-    EXPECT_EQ(sizeof(IndexFileHeader), index);
-    EXPECT_EQ(index + sizeof(IndexRecord), db_store.getIndexFile()->getHeader()->empty_index_node_ofs);
+TEST(IndexFileTest, Collect) {
+    IndexFileMgr file_mgr(std::tmpnam(nullptr));
+    file_mgr.init();
+    Location loc = file_mgr.alloc();
+    file_mgr.collect(loc);
+    loc = file_mgr.alloc();
+    EXPECT_EQ(1, loc.file_no);
+    EXPECT_EQ(0, loc.offset);
 }
 
-TEST(StorageTest, CollectIndex) {
-    DBStore db_store(std::tmpnam(nullptr));
-    int first = db_store.getIndexFile()->getHeader()->empty_index_node_ofs;
-    db_store.collectIndexSpace(db_store.allocIndex());
-    EXPECT_EQ(first, db_store.getIndexFile()->getHeader()->empty_index_node_ofs);
-    EXPECT_EQ(first, db_store.allocIndex());
-}
-
-TEST(StorageTest, GrowIndexFile) {
-    DBStore db_store(std::tmpnam(nullptr));
-    int ofs = db_store.getIndexFile()->getHeader()->empty_index_node_ofs;
-    db_store.getIndexFile()->grow();
-    int num_records = countRecords(&db_store, ofs);
-    int expect = (DefaultIndexFileSize - sizeof(IndexFileHeader)) / sizeof(IndexRecord)
-                 + DefaultIndexFileSize / sizeof(IndexRecord);
-}
-
-TEST(StorageTest, AllocData) {
-    DBStore db_store(std::tmpnam(nullptr));
-    EXPECT_THROW(db_store.allocData(DefaultDataFileSize * 2), SizeLimitException);
+TEST(DataFileTest, Alloc) {
+    DataFileMgr file_mgr(std::tmpnam(nullptr));
+    file_mgr.init();
+    EXPECT_THROW(file_mgr.alloc(DefaultDataFileSize * 2).isNull(), SizeLimitException);
 
     Location loc;
-    EXPECT_NO_THROW((loc = db_store.allocData(1024)));
+    EXPECT_NO_THROW((loc = file_mgr.alloc(1024)));
     EXPECT_FALSE(loc.isNull());
-    DataRecord *record= db_store.dataRecordAt(loc);
+    DataRecord *record= file_mgr.recordAt(loc);
     EXPECT_EQ(1024,record->data_size);
     EXPECT_TRUE(record->block_size >= 1024);
-    EXPECT_EQ(0,loc.file_no);
+    EXPECT_EQ(1,loc.file_no);
     EXPECT_EQ(0,loc.offset);
-}
-
-TEST(StorageTest, CollectData) {
-    DBStore db_store(std::tmpnam(nullptr));
-    const int size = 1024;
-    Location loc = db_store.allocData(size);
-    db_store.collectDataSpace(loc);
-    Location loc2 = db_store.allocData(size);
-    EXPECT_EQ(loc2.file_no, loc.file_no);
-    EXPECT_EQ(loc2.offset, loc.offset);
 }

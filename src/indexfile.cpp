@@ -2,147 +2,73 @@
 
 #include "indexfile.h"
 #include "dbstore.h"
-#include "storage.h"
 
 namespace naivedb {
 
 
-IndexFile::IndexFile(const std::string &filename, DBStore *db_store) : File(filename, db_store) {
-    if (!isExist()) {
-        file_.create(DefaultIndexFileSize);
-        init();
-    } else {
-        file_.open();
+IndexFileMgr::IndexFileMgr(const std::string &filename) : FileMgr(filename, DefaultIndexFileSize) {
+}
+
+IndexFileHeader *IndexFileMgr::getIndexHeader() {
+    return reinterpret_cast<IndexFileHeader *>(FileMgr::getFileHeader());
+}
+
+
+IndexRecord *IndexFileMgr::recordAt(const Location &location) {
+    assert(!location.isNull());
+    return reinterpret_cast<IndexRecord *>(get(location));
+}
+
+Location IndexFileMgr::alloc() {
+    IndexFileHeader *header = getIndexHeader();
+    if (header->empty_head.isNull()) {
+        createFile();
+    }
+    Location loc = header->empty_head;
+    header->empty_head = recordAt(loc)->next;
+    return loc;
+}
+
+void IndexFileMgr::collect(const Location &location) {
+    addToHead(location);
+}
+
+void IndexFileMgr::initFile(int file_no) {
+    IndexRecord *cur = reinterpret_cast<IndexRecord *>(get({file_no, 0}));
+
+    void *end = reinterpret_cast<void *>(reinterpret_cast<char *>(cur) + DefaultIndexFileSize);
+    int cur_ofs = 0;
+    const int record_size = sizeof(IndexRecord), size = DefaultIndexFileSize;
+    while (true) {
+        int next_ofs = cur_ofs + record_size;
+        if (next_ofs + record_size < size) {
+            cur->next = {file_no, next_ofs};
+            ++cur;
+            cur_ofs += record_size;
+
+        } else {
+            //cur->next = getIndexHeader()->empty_head;
+            addToHead({file_no, cur_ofs});
+            getIndexHeader()->empty_head = {file_no, 0};
+            break;
+        }
     }
 }
 
-IndexFile::~IndexFile() {
-    file_.close();
-}
-
-IndexFileHeader *IndexFile::getHeader() {
-    return reinterpret_cast<IndexFileHeader *>(file_.get());
-}
-
-IndexRecord *IndexFile::recordAt(int offset) {
-    assert(offset > 0);
-    return reinterpret_cast<IndexRecord *>(file_.get(offset));
-}
-
-int IndexFile::alloc() {
-    int head_ofs = getHeader()->empty_index_node_ofs;
-    IndexRecord *empty_head = recordAt(head_ofs);
-    int next_ofs = empty_head->next;
-
-    if (next_ofs < 0) {
-        grow();
-    } else {
-        getHeader()->empty_index_node_ofs = next_ofs;
-    }
-    return head_ofs;
-}
-
-int IndexFile::getBucketIndex(int min_size) const {
-    for (int i = 0; i < NumBucket; i++) {
-        if (BucketSizes[i] >= min_size)
-            return i;
-    }
-    return NumBucket - 1;
-}
-
-void IndexFile::reserve(int min_size) {
-    int size = getHeader()->index_file_size;
-    if (size >= min_size)
-        return;
-    for (; size < min_size; size <<= 1);
-    file_.grow(size);
-}
-
-void IndexFile::collect(int offset) {
-    int *next = static_cast<int *>(recordAt(offset)->getData());
-    IndexFileHeader *header = getHeader();
-    *next = header->empty_index_node_ofs;
-    header->empty_index_node_ofs = offset;
-}
-
-bool File::isExist() {
-    return file_.isExist();
+void IndexFileMgr::addToHead(const Location &location) {
+    assert(!location.isNull());
+    IndexFileHeader *header = getIndexHeader();
+    recordAt(location)->next = header->empty_head;
+    header->empty_head = location;
 }
 
 
-void IndexFile::initHeader() {
-    IndexFileHeader *header = getHeader();
-    for (int i = 0; i < NumBucket; i++) {
-        header->empty_heads[i].init();
-    }
-    header->empty_index_node_ofs = sizeof(*header);
-    header->index_file_size = DefaultIndexFileSize; // FIXME
-    header->num_data_files = 0;
-    header->tree_root = header->first_leaf = -1;
-}
-
-void IndexFile::addToEmptyHeads(const Location &loc) {
-    assert(!loc.isNull());
-    IndexFileHeader *header = getHeader();
-    DataRecord *record = db_store_->dataRecordAt(loc);
-    int bucket = getBucketIndex(record->block_size);
-    record->next = header->empty_heads[bucket];
-    header->empty_heads[bucket] = loc;
-}
-
-
-Location IndexFile::getEmptyLocation(int bucket) {
-    assert(bucket >= 0 && bucket < NumBucket);
-    return getHeader()->empty_heads[bucket];
-}
-
-void IndexFile::removeEmptyLocation(int bucket) {
-    IndexFileHeader *header = getHeader();
-    assert(!header->empty_heads[bucket].isNull());
-    header->empty_heads[bucket] = db_store_->dataRecordAt(header->empty_heads[bucket])->next;
-}
-
-void IndexFile::grow() {
-    IndexFileHeader *header = getHeader();
-    int cur_size = header->index_file_size;
-    int new_size = cur_size << 1;
-    if (new_size <= 0) {
-        // TODO
-        return;
-    }
-    file_.grow(new_size);
-    header->index_file_size = new_size;
-    int i = header->empty_index_node_ofs;
-    IndexRecord *record = recordAt(i);
-    while (record->next > 0) {
-        // go to end of the list
-        i = record->next;
-        record = recordAt(i);
-    }
-    record->next = cur_size;
-    initEmptyRecords(cur_size);
-
-
-}
-
-void IndexFile::initEmptyRecords(int index) {
-
-    IndexFileHeader *header = getHeader();
-    const int record_size = sizeof(IndexRecord),
-        size = header->index_file_size;
-    while (index < size) {
-        IndexRecord *record = recordAt(index);
-        int next_ofs = index + record_size;
-        record->next = next_ofs + record_size < size ? next_ofs : -1;
-        index += record_size;
-    }
-}
-
-void IndexFile::init() {
-    initHeader();
-    IndexFileHeader *header = getHeader();
-    int i = header->empty_index_node_ofs;
-    initEmptyRecords(i);
+void IndexFileMgr::initHeader() {
+    IndexFileHeader *header = getIndexHeader();
+    header->num_files = 1;
+    header->empty_head.init();
+    header->first_leaf.init();
+    header->tree_root.init();
 }
 
 

@@ -3,14 +3,21 @@
 namespace naivedb {
 
 
-DataFileMgr::DataFileMgr(const std::string &filename) :
-    FileMgr(filename, DefaultDataFileSize) {
+DataFileMgr::DataFileMgr(const std::string &filename) : FileMgr(filename, DefaultDataFileSize) {
 }
 
 void DataFileMgr::initFile(int file_no) {
     DataRecord *first = recordAt({file_no, 0});
     first->block_size = DefaultDataFileSize - sizeof(first->block_size);
     addToHead({file_no, 0});
+}
+
+void DataFileMgr::initHeader() {
+    DataFileHeader *header = getDataHeader();
+    header->num_files = 1;
+    for (auto &head:header->empty_heads) {
+        head.init();
+    }
 }
 
 bool DataFileMgr::isReusableSize(int size) const {
@@ -29,14 +36,13 @@ int DataFileMgr::allocAt(const Location &location, int size) {
     if (!isReusableSize(remained_size))return -1;
     int remained_offset = location.offset + sizeof(record->block_size) + size;
     record->block_size = size;
-    recordAt(remained_offset)->block_size = remained_size - sizeof(record->block_size);
+    recordAt({location.file_no,remained_offset})->block_size = remained_size - sizeof(record->block_size);
     return remained_offset;
 }
 
 void DataFileMgr::collect(const Location &location) {
     assert(!location.isNull());
     addToHead(location);
-
 }
 
 int DataFileMgr::getSuggestedBucket(int min_size) const {
@@ -57,7 +63,7 @@ void DataFileMgr::removeEmptyLocation(int bucket) {
     header->empty_heads[bucket] = recordAt(header->empty_heads[bucket])->next;
 }
 
-Location DataFileMgr::getFreeLocation(int size_to_alloc){
+Location DataFileMgr::getFreeLocation(int size_to_alloc) {
     int bucket = getSuggestedBucket(size_to_alloc);
 
     Location loc;
@@ -77,7 +83,7 @@ Location DataFileMgr::getFreeLocation(int size_to_alloc){
         loc = getFromHead(bucket);
         int available_size = recordAt(loc)->block_size;
         if (available_size < size_to_alloc) {
-            throw SizeLimitException();
+            return Location();
         }
     }
     removeEmptyLocation(bucket);
@@ -88,6 +94,10 @@ Location DataFileMgr::alloc(int min_size) {
     assert(min_size > 0);
     int size_to_alloc = (min_size + 3) & 0xfffffffc; // make it multiple of 4 for better performance
     Location loc = getFreeLocation(size_to_alloc);
+
+    if(loc.isNull()){
+        throw SizeLimitException();
+    }
 
     int block_size = recordAt(loc)->block_size;
     assert(size_to_alloc <= block_size);
@@ -113,5 +123,6 @@ Location DataFileMgr::getFromHead(int bucket) {
     assert(bucket >= 0 && bucket < NumBucket);
     return getDataHeader()->empty_heads[bucket];
 }
+
 
 }

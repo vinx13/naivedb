@@ -14,40 +14,27 @@ const int DefaultIndexFileSize = 1024;
 struct IndexFileHeader;
 struct IndexRecord;
 
-class IndexFile : public File {
+class IndexFileMgr : public FileMgr {
 public:
 
-    IndexFile(const std::string &filename, DBStore *db_store);
+    IndexFileMgr(const std::string &filename);
 
-    ~IndexFile();
+    IndexRecord *recordAt(const Location &location);
 
-    IndexFileHeader *getHeader();
+    Location alloc();
 
-    void init();
+    void collect(const Location &location);
 
-    IndexRecord *recordAt(int offset);
+    IndexFileHeader *getIndexHeader();
 
-    int alloc();
 
-    void collect(int offset);
 
-    void addToEmptyHeads(const Location &loc);
+private:
+    virtual void initFile(int file_no);;
 
-    // get the index of the list that contains empty blocks that are not less than min_size
-    int getBucketIndex(int min_size) const;
+    virtual void initHeader();
 
-    void reserve(int min_size);
-
-    Location getEmptyLocation(int bucket);
-
-    void removeEmptyLocation(int bucket);
-
-    void initHeader();
-
-    void grow();
-
-    void initEmptyRecords(int index);
+    void addToHead(const Location &location);
 };
-
 }
 #endif //NAIVEDB_INDEXFILE_H

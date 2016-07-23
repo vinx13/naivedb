@@ -27,6 +27,8 @@ private:
 
     virtual void initFile(int file_no);
 
+    virtual void initHeader();
+
     void removeEmptyLocation(int bucket);
 
     int getSuggestedBucket(int min_size) const;
