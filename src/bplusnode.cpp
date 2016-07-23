@@ -15,7 +15,7 @@ void BPlusNode::asLeaf() { data->is_leaf = true; }
 
 void BPlusNode::asInternal() { data->is_leaf = false; }
 
-void BPlusNode::init(bool is_leaf) { data->init(is_leaf); }
+void BPlusNode::init() { data->init(isLeaf()); }
 
 Location BPlusNode::getChild(int i) const {
     assert(!isLeaf());
@@ -50,9 +50,12 @@ int BPlusNode::find(const char *key) {
 
 int BPlusNode::linearSearch(int lo, int hi, const char *key) {
     while (lo < hi) {
-        if (std::strcmp(getKey(lo), key) == 0) {
+        if(data->keys[lo].isNull()) break;
+        const char *k = getKey(lo);
+        int cmp =std::strcmp(k, key);
+        if (cmp == 0) {
             return lo;
-        }
+        } else if(cmp > 0) break;
         ++lo;
     }
     return -1;
@@ -96,4 +99,6 @@ void BPlusNode::setNext(const Location &location) {
     assert(isLeaf());
     data->Leaf.next = location;
 }
+
+
 }

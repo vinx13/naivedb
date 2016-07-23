@@ -10,9 +10,9 @@
 namespace naivedb {
 
 class BPlus;
-class BPlusNodeData;
-class IndexRecord;
-class DataRecord;
+struct BPlusNodeData;
+struct IndexRecord;
+struct DataRecord;
 class DBStore;
 
 class BPlusNode {
@@ -26,7 +26,7 @@ public:
 
     void asInternal();
 
-    void init(bool is_leaf);
+    void init();
 
     const char * getKey(int i);
 
