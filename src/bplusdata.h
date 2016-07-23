@@ -1,9 +1,7 @@
 #ifndef NAIVEDB_BPLUSDATA_H
 #define NAIVEDB_BPLUSDATA_H
 
-#include "file.h"
 #include "location.h"
-#include "storage.h"
 
 namespace naivedb {
 
@@ -11,33 +9,26 @@ const int TreeOrder = 4;
 
 #pragma pack(1)
 
-struct InternalNodeData {
+struct BPlusNode {
     bool is_leaf;
-    Location keys[TreeOrder - 1];
-    int children_offset[TreeOrder];
+    union {
+        Location locs[TreeOrder * 2 - 1];
+        struct {
+            Location keys[TreeOrder - 1];
+            Location children[TreeOrder];
+        } Internal;
 
-    void init() {
-        is_leaf = false;
-        for (int i = 0; i < TreeOrder - 1; i++) {
-            keys[i].init();
-            children_offset[i] = -1;
-        }
-        children_offset[TreeOrder - 1] = -1;
-    }
-};
+        struct {
+            Location keys[TreeOrder - 1];
+            Location values[TreeOrder - 1];
+            Location next;
+        } Leaf;
+    };
 
-struct LeafNodeData {
-    bool is_leaf;
-    int next;
-    Location keys[TreeOrder];
-    Location values[TreeOrder];
-
-    void init() {
-        is_leaf = true;
-        for (int i = 0; i < TreeOrder; i++) {
-            keys[i].init();
-            values[i].init();
-        }
+    void init(bool is_leaf = false) {
+        this->is_leaf = is_leaf;
+        for (auto &loc:locs)
+            loc.init();
     }
 };
 
