@@ -14,7 +14,7 @@ struct Location {
 
     void init() { file_no = -1; }
 
-    bool isNull() const { return file_no < 0; }
+    bool isNull() const { return file_no < 0 || offset < 0; }
 };
 
 #pragma pack()
