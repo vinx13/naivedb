@@ -41,3 +41,14 @@ TEST(DataFileTest, Alloc) {
     EXPECT_EQ(1,loc.file_no);
     EXPECT_EQ(0,loc.offset);
 }
+
+TEST(DataFileTest, Collect) {
+    DataFileMgr file_mgr(std::tmpnam(nullptr));
+    file_mgr.init();
+    const int size = 1024;
+    Location loc = file_mgr.alloc(size);
+    file_mgr.collect(loc);
+    Location loc2 = file_mgr.alloc(size);
+    EXPECT_EQ(loc2.file_no, loc.file_no);
+    EXPECT_EQ(loc2.offset, loc.offset);
+}
