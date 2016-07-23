@@ -3,30 +3,45 @@
 
 #include "file.h"
 #include "storage.h"
+#include "exception.h"
 
 namespace naivedb {
 
 
-const int DefaultDataFileSize = 8*1024*1024;
+const int DefaultDataFileSize = 8 * 1024 * 1024;
 
-class DataFile : public File {
+class DataFileMgr : public FileMgr {
 public:
 
-    DataFile(const std::string &filename, int file_no, DBStore *db_store);
+    DataFileMgr(const std::string &filename);
 
-    void init();
+    DataFileHeader *getDataHeader();
 
-    DataRecord *recordAt(int offset);
+    Location alloc(int min_size);
 
-    int allocAt(int offset, int size);
+    DataRecord *recordAt(const Location &location);
 
-    void collect(int offset, int size);
+    void collect(const Location &location);
+
+private:
+
+    virtual void initFile(int file_no);
+
+    void removeEmptyLocation(int bucket);
+
+    int getSuggestedBucket(int min_size) const;
+
+    int allocAt(const Location &location, int size);
 
     // decide whether block with specific size is large enough for next allocation
     bool isReusableSize(int size) const;
 
-private:
-    int file_no_;
+    Location getFromHead(int bucket);
+
+    Location getFreeLocation(int size);
+
+    void addToHead(const Location &loc);
+
 };
 
 }

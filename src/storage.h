@@ -20,12 +20,15 @@ const int BucketSizes[] = {
 
 constexpr size_t max(size_t a, size_t b) { return a > b ? a : b; }
 
-struct IndexFileHeader {
-    int index_file_size;
-    int num_data_files;
+struct FileHeader {
+    int num_files;
+};
+struct IndexFileHeader : FileHeader {
+    Location empty_head, tree_root, first_leaf;
+};
+
+struct DataFileHeader : FileHeader {
     Location empty_heads[NumBucket];
-    int tree_root, first_leaf;
-    int empty_index_node_ofs;
 };
 
 struct DataRecord {
@@ -42,11 +45,11 @@ struct DataRecord {
 
 struct IndexRecord {
     union {
-        int next;
-        char data[max(sizeof(InternalNodeData), sizeof(LeafNodeData))];
+        BPlusNode data;
+        Location next; // for empty record
     };
 
-    void *getData() {
+    BPlusNode *getData() {
         return reinterpret_cast<void *>(data);
     }
 };
