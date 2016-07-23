@@ -1,5 +1,4 @@
 #include "bplusnode.h"
-#include "datafile.h"
 
 
 namespace naivedb {
@@ -50,12 +49,11 @@ int BPlusNode::find(const char *key) {
 
 int BPlusNode::linearSearch(int lo, int hi, const char *key) {
     while (lo < hi) {
-        if(data->keys[lo].isNull()) break;
-        const char *k = getKey(lo);
-        int cmp =std::strcmp(k, key);
+        if (data->keys[lo].isNull()) break;
+        int cmp = std::strcmp(getKey(lo), key);
         if (cmp == 0) {
             return lo;
-        } else if(cmp > 0) break;
+        } else if (cmp > 0) break;
         ++lo;
     }
     return -1;
@@ -64,7 +62,7 @@ int BPlusNode::linearSearch(int lo, int hi, const char *key) {
 int BPlusNode::upperBound(const char *key) {
     int i = 0;
     while (i < TreeOrder - 1) {
-        if (data->keys[i].isNull() || strcmp(key, getKey(i)) < 0) {
+        if (data->keys[i].isNull() || std::strcmp(key, getKey(i)) < 0) {
             break;
         }
         ++i;
