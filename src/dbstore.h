@@ -4,15 +4,13 @@
 #include <vector>
 #include <string>
 #include <memory>
+
 #include "storage.h"
+#include "indexfile.h"
+#include "datafile.h"
 
 
 namespace naivedb {
-
-
-class IndexFileMgr;
-
-class DataFileMgr;
 
 
 class DBStore {
@@ -24,7 +22,7 @@ public:
 
     DataRecord *dataRecordAt(const Location &location);
 
-    void saveData(const void *data, int len);
+    Location saveData(const void *data, int len);
 
     Location getRoot();
 
@@ -51,6 +49,7 @@ private:
 
     void collectData(const Location &location);
 };
+
 
 }
 
