@@ -9,17 +9,16 @@ const int TreeOrder = 4;
 
 #pragma pack(1)
 
-struct BPlusNode {
+struct BPlusNodeData {
     bool is_leaf;
     union {
-        Location locs[TreeOrder * 2 - 1];
+        Location keys[TreeOrder - 1];
+
         struct {
-            Location keys[TreeOrder - 1];
             Location children[TreeOrder];
         } Internal;
 
         struct {
-            Location keys[TreeOrder - 1];
             Location values[TreeOrder - 1];
             Location next;
         } Leaf;
@@ -27,8 +26,12 @@ struct BPlusNode {
 
     void init(bool is_leaf = false) {
         this->is_leaf = is_leaf;
-        for (auto &loc:locs)
+        for (auto &loc:keys) {
             loc.init();
+        }
+        for (auto &loc:Internal.children) {
+            loc.init();
+        }
     }
 };
 

@@ -45,11 +45,11 @@ struct DataRecord {
 
 struct IndexRecord {
     union {
-        BPlusNode data;
+        BPlusNodeData data;
         Location next; // for empty record
     };
 
-    BPlusNode *getData() {
+    BPlusNodeData *getData() {
         return &data;
     }
 };
