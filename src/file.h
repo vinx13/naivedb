@@ -6,7 +6,6 @@
 #include "mmap.h"
 #include "location.h"
 #include "storage.h"
-#include "datafile.h"
 
 namespace naivedb {
 
@@ -16,11 +15,13 @@ class DBStore;
 
 class FileMgr {
 public:
-    FileMgr(const std::string &prefix, int file_size, DBStore *db_store);
+    FileMgr(const std::string &prefix, int file_size);
 
     virtual ~FileMgr() {
         closeAllFiles();
     }
+
+    void init();
 
     void openAllFiles(int num_files);
 
@@ -28,10 +29,10 @@ public:
 
 protected:
 
+    virtual void initHeader() = 0;
     virtual void initFile(int file_no) = 0;
 
     const std::string prefix_;
-    DBStore *db_store_;
     std::vector<MemoryMappedFile *> files_;
     int file_size_;
 

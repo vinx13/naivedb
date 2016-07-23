@@ -3,24 +3,13 @@
 namespace naivedb {
 
 
-FileMgr::FileMgr(const std::string &prefix, int file_size, DBStore *db_store)
-    : prefix_(prefix), db_store_(db_store), file_size_(file_size) {
-    MemoryMappedFile *file = new MemoryMappedFile(getFileName(0));
-    files_.push_back(file);
-    if (file->isExist()) {
-        FileHeader *header = getFileHeader();
-        openAllFiles(header->num_files);
-    } else {
-        file->create(file_size_);
-        FileHeader *header = getFileHeader();
-        header->num_files = 1;
-    }
+FileMgr::FileMgr(const std::string &prefix, int file_size) : prefix_(prefix), file_size_(file_size) {
 }
 
 void FileMgr::openAllFiles(int num_files) {
     for (int i = 1; i <= num_files; i++) {
         files_.push_back(new MemoryMappedFile(getFileName(i)));
-        // TODO: check existance
+        // TODO: check existence
     }
 }
 
@@ -58,7 +47,19 @@ void *FileMgr::get(const Location &location) {
     void *p = files_[location.file_no]->get(location.offset);
     assert(p);
     return p;
+}
 
+
+void FileMgr::init() {
+    MemoryMappedFile *file = new MemoryMappedFile(getFileName(0));
+    files_.push_back(file);
+    if (file->isExist()) {
+        FileHeader *header = getFileHeader();
+        openAllFiles(header->num_files);
+    } else {
+        file->create(file_size_);
+        initHeader();
+    }
 }
 
 
