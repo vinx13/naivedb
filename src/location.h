@@ -12,7 +12,7 @@ struct Location {
 
     Location(int file_no = -1, int offset = 0) : file_no(file_no), offset(offset) { }
 
-    void init() { file_no = -1; }
+    void init() { file_no = -1; offset = 0; }
 
     bool isNull() const { return file_no < 0 || offset < 0; }
 };

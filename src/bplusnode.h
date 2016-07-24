@@ -16,8 +16,11 @@ struct DataRecord;
 class DBStore;
 
 class BPlusNode {
+
     friend class BPlus;
+
 public:
+
     BPlusNode(const Location &location, DBStore *db_store);
 
     bool isLeaf() const;
@@ -28,17 +31,20 @@ public:
 
     void init();
 
+    bool isFull();
     const char * getKey(int i);
+
+    Location getKeyLoc(int i);
 
     IndexRecord * getChildRec(int i);
 
     DataRecord * getValueRec(int i);
 
-    Location getChild(int i)const;
+    Location getChildLoc(int i)const;
 
-    Location getValue(int i)const;
+    Location getValueLoc(int i)const;
 
-    int upperBound(const char *key);
+    int upperBound(const char *key, bool equal);
 
     int find(const char *key);
 
@@ -48,9 +54,16 @@ public:
 
     void addValue(int i, const Location &location);
 
+    void removeKey(int i);
+
+    void removeChild(int i);
+
+    void removeValue(int i);
+
     Location getNext() const;
 
     void setNext(const Location &location);
+
 private:
 
     BPlusNodeData *data;

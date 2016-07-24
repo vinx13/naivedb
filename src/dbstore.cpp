@@ -30,7 +30,7 @@ IndexRecord *DBStore::indexRecordAt(const Location &location) {
 }
 
 Location DBStore::saveData(const void *data, int len) {
-    Location loc = data_file_->alloc(len + DataRecord::NonEmptyHeaderSize);
+    Location loc = data_file_->alloc(len + DataRecord::NonEmptyHeaderSize); // FIXME: space for header should not be specified
     DataRecord *record = dataRecordAt(loc);
     record->data_size = len;
 
