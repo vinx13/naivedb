@@ -15,6 +15,7 @@ class BPlusNode;
 
 class BPlus {
 public:
+
     BPlus(DBStore *db_store);
 
     ~BPlus();
@@ -25,20 +26,15 @@ public:
 
     void get(const char *key, void *value, int *len);
 
-    DBStore *db_store_;
-
 private:
-    // find the (unique) leaf data in which key may appear, record the path if parents is not null,
-    // return value is guaranteed to be a valid location
-    Location findLeaf(const char *key, std::stack<Location> *parents);
 
     Location root_;
 
-    void deleteTree(BPlusNode *node);
+    DBStore *db_store_;
 
-    void rightShift(BPlusNode *left, void *right, int index_from);
-
-    Location saveToFile(const void *value, int len) const;
+    // find the (unique) leaf data in which key may appear, record the path if parents is not null,
+    // return value is guaranteed to be a valid location
+    Location findLeaf(const char *key, std::stack<Location> *parents);
 
     Location insertAtLeaf(BPlusNode &leaf, const Location &key_loc, const Location &value_loc, int index);
 
