@@ -9,7 +9,7 @@
 namespace naivedb {
 
 
-const int DefaultIndexFileSize = 1024;
+const int DefaultIndexFileSize = 1024 * 1024 * 16;
 
 struct IndexFileHeader;
 struct IndexRecord;
@@ -26,7 +26,6 @@ public:
     void collect(const Location &location);
 
     IndexFileHeader *getIndexHeader();
-
 
 
 private:

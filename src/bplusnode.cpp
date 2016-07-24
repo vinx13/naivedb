@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "bplusnode.h"
 
 
@@ -41,7 +43,8 @@ IndexRecord *BPlusNode::getChildRec(int i) {
 const char *BPlusNode::getKey(int i) {
     Location loc = getKeyLoc(i);
     assert(!loc.isNull());
-    return reinterpret_cast<char *>(db_store_->dataRecordAt(loc)->getData());
+    return reinterpret_cast<char *>(db_store_->dataRecordAt(
+        loc)->getData()); // Be cautious that memory may be deallocated
 }
 
 Location BPlusNode::getKeyLoc(int i) {
@@ -75,6 +78,22 @@ int BPlusNode::upperBound(const char *key, bool equal) {
         ++i;
     }
     return i;
+}
+
+int BPlusNode::upperBound(const Location &location, bool equal) {
+    assert(!location.isNull());
+    char *buf = copyKey(location);
+    int result = upperBound(buf, equal);
+    delete[] buf;
+    return result;
+}
+
+char *BPlusNode::copyKey(const Location &location) const {
+    assert(!location.isNull());
+    DataRecord *record = db_store_->dataRecordAt(location);
+    char *buf = new char[record->data_size];
+    std::memcpy(reinterpret_cast<void *>(buf), record->getData(), record->data_size);
+    return buf;
 }
 
 void BPlusNode::addKey(int i, const Location &location) {

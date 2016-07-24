@@ -34,7 +34,7 @@ struct DataFileHeader : FileHeader {
 struct DataRecord {
     int block_size; // size of this record (excluding 'block_size') and empty space after this record
     union {
-        int data_size; // for non-empty record
+        int data_size; // for non-empty record, size of data, excluding 'block_size' and 'data_size'
         Location next; // for empty record
     };
 

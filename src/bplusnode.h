@@ -10,9 +10,11 @@
 namespace naivedb {
 
 class BPlus;
+
 struct BPlusNodeData;
 struct IndexRecord;
 struct DataRecord;
+
 class DBStore;
 
 class BPlusNode {
@@ -32,17 +34,18 @@ public:
     void init();
 
     bool isFull();
-    const char * getKey(int i);
+
+    const char *getKey(int i);
 
     Location getKeyLoc(int i);
 
-    IndexRecord * getChildRec(int i);
+    IndexRecord *getChildRec(int i);
 
-    DataRecord * getValueRec(int i);
+    DataRecord *getValueRec(int i);
 
-    Location getChildLoc(int i)const;
+    Location getChildLoc(int i) const;
 
-    Location getValueLoc(int i)const;
+    Location getValueLoc(int i) const;
 
     int upperBound(const char *key, bool equal);
 
@@ -71,6 +74,10 @@ private:
     DBStore *db_store_;
 
     int linearSearch(int lo, int hi, const char *key);
+
+    int upperBound(const Location &location, bool equal);
+
+    char *copyKey(const Location &location) const;
 };
 
 

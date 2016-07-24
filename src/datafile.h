@@ -8,7 +8,7 @@
 namespace naivedb {
 
 
-const int DefaultDataFileSize = 8 * 1024 * 1024;
+const int DefaultDataFileSize = 1024 * 1024 * 32;
 
 class DataFileMgr : public FileMgr {
 public:
