@@ -1,2 +1,2 @@
 # Naive DB  
-[![Build Status](https://travis-ci.com/vinx13/naivedb.svg?token=4xjaemhqkLwjxCSGa7Rx&branch=master)](https://travis-ci.com/vinx13/naivedb)
+[![Build Status](https://travis-ci.org/vinx13/naivedb.svg?branch=master)](https://travis-ci.org/vinx13/naivedb)
