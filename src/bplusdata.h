@@ -11,9 +11,9 @@ const int TreeOrder = 4;
 
 struct BPlusNodeData {
     bool is_leaf;
-    union {
-        Location keys[TreeOrder - 1];
+    Location keys[TreeOrder - 1];
 
+    union {
         struct {
             Location children[TreeOrder];
         } Internal;
