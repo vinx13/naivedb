@@ -20,7 +20,9 @@ FD MemoryMappedFileImpl::openFile(const std::string &filename) {
 
 void MemoryMappedFileImpl::closeFile(FD fd) {
     assert(fd != InvalidFD);
-    ::closeFile(fd);
+    if(map_handle_ != INVALID_HANDLE_VALUE)
+        CloseHandle(map_handle_);
+    CloseHandle(fd);
 }
 
 
