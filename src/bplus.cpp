@@ -28,7 +28,7 @@ int BPlus::get(const char *key, void *value) {
     int index = leaf.find(key);
     if (index < 0) {
         // TODO not found
-        return  0;
+        return 0;
     }
     DataRecord *record = leaf.getValueRec(index);
     int len = record->data_size;
@@ -58,12 +58,24 @@ void BPlus::set(const char *key, const void *value, int len, bool overwrite) {
     BPlusNode leaf(findLeaf(key, &parents), db_store_);
     assert(leaf.isLeaf());
     int index = leaf.upperBound(key, false);
-    if (!overwrite && index < TreeOrder - 1 && !leaf.getKeyLoc(index).isNull() &&
-        0 == std::strcmp(leaf.getKey(index), key)) {
+    bool dup = false;
+    if (index < TreeOrder - 1
+        && !leaf.getKeyLoc(index).isNull()
+        && 0 == std::strcmp(leaf.getKey(index), key)) {
+        dup = true;
+    }
+    if (!overwrite && dup) {
         //TODO duplicate keys
         return;
     }
-
+    if (dup) {
+        // overwrite old record
+        // we can simply replace the new location and make no other changes
+        db_store_->removeData(leaf.getValueLoc(index));
+        leaf.removeValue(index);
+        leaf.addValue(index, db_store_->saveData(value, len));
+        return;
+    }
     Location key_loc = db_store_->saveData(reinterpret_cast<const void *>(key), std::strlen(key) + 1),
         value_loc = db_store_->saveData(value, len);
 
