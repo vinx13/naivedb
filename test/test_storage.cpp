@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
-#include <datafile.h>
 #include <cstring>
+
 #include "dbstore.h"
+#include "datafile.h"
 #include "indexfile.h"
 
 using namespace naivedb;
