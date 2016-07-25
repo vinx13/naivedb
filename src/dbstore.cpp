@@ -71,4 +71,9 @@ void DBStore::collectData(const Location &location) {
     data_file_->collect(location);
 }
 
+void DBStore::removeData(const Location &location) {
+    collectData(location);
+}
+
+
 }

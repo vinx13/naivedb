@@ -24,6 +24,8 @@ public:
 
     Location saveData(const void *data, int len);
 
+    void removeData(const Location &location);
+
     Location getRoot();
 
     void setRoot(const Location &location);
