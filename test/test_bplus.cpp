@@ -1,4 +1,7 @@
 #include <gtest/gtest.h>
+#include <cstdlib>
+#include <cstring>
+
 #include "dbstore.h"
 #include "bplus.h"
 

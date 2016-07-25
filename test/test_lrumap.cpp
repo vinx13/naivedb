@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 #include <random>
+#include <chrono>
+#include <algorithm>
 
 #include "lrumap.h"
 
