@@ -11,7 +11,6 @@
 namespace naivedb {
 
 
-
 class MemoryMappedFileImpl;
 
 class MemoryMappedFile {
@@ -32,13 +31,13 @@ private:
     void open();
 
     static int used_memory__, memory_limit__;
-    static LruMap view_map__;
+    static LruMap<FD, void *> view_map__;
     static std::map<FD, int> size_map__;
     std::string filename_;
     FD fd_;
     MemoryMappedFileImpl *impl_;
 
-    void * map();
+    void *map();
 };
 
 

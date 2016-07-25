@@ -5,7 +5,7 @@
 namespace naivedb {
 
 int MemoryMappedFile::used_memory__ = 0, MemoryMappedFile::memory_limit__ = 1024 * 1024 * 256;
-LruMap MemoryMappedFile::view_map__;
+LruMap<FD, void*> MemoryMappedFile::view_map__;
 std::map<FD, int> MemoryMappedFile::size_map__;
 
 MemoryMappedFile::MemoryMappedFile(const std::string &filename) : filename_(filename), fd_(InvalidFD) {

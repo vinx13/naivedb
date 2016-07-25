@@ -15,7 +15,6 @@ set(SOURCE_FILES
         src/indexfile.cpp
         src/bplusnode.cpp
         src/bplus.cpp
-        src/lrumap.cpp
         src/database.cpp
         src/platform.h)
 

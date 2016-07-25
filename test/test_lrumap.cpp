@@ -1,14 +1,12 @@
 #include <gtest/gtest.h>
 #include <random>
-#include <chrono>
-#include <algorithm>
 
 #include "lrumap.h"
 
 using namespace naivedb;
 
 TEST(LruMapTest, SimpleInsert) {
-    LruMap map;
+    LruMap<int, void *> map;
     map.put(1, (void *) 1);
     EXPECT_EQ((void *) 1, map.get(1));
     EXPECT_EQ(nullptr, map.get(2));
@@ -21,7 +19,7 @@ TEST(LruMapTest, SimpleInsert) {
 }
 
 TEST(LruMapTest, RemoveLru) {
-    LruMap map;
+    LruMap<int, void *> map;
     std::vector<int> elems;
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     for (int i = 1; i < 100; i++) {
