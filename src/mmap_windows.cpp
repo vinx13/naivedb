@@ -1,6 +1,7 @@
 #ifdef _WIN32
 
 #include <cassert>
+#include "Shlwapi.h"
 
 #include "mmap.h"
 
@@ -8,8 +9,8 @@
 namespace naivedb {
 
 FD MemoryMappedFileImpl::openFile(const std::string &filename) {
-    fd = CreateFile(
-        filenamew.c_str(), GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ,
+    FD fd = CreateFile(
+        filename.c_str(), GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ,
         NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if (fd == INVALID_HANDLE_VALUE) {
         // TODO
@@ -19,7 +20,7 @@ FD MemoryMappedFileImpl::openFile(const std::string &filename) {
 
 void MemoryMappedFileImpl::closeFile(FD fd) {
     assert(fd != InvalidFD);
-    closeFile(fd);
+    ::closeFile(fd);
 }
 
 
@@ -50,13 +51,13 @@ void MemoryMappedFileImpl::extendSize(FD fd, int size) {
 }
 
 bool MemoryMappedFileImpl::isExist(const std::string &filename) {
-    return PathFileExists(filename.c_str());
+    return PathFileExists(filename.c_str()) == TRUE;
 }
 
-void *MemoryMappedFileImpl::map(int fd, int size) {
+void *MemoryMappedFileImpl::map(FD fd, int size) {
     assert(fd != InvalidFD);
     assert(size > 0);
-    map_handle_ = CreateFileMapping(fd, NULL, PAGE_READWRITE, 0, length, NULL);
+    map_handle_ = CreateFileMapping(fd, NULL, PAGE_READWRITE, 0, size, NULL);
     if (map_handle_ == NULL) {
         // TODO
         return nullptr;

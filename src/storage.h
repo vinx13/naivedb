@@ -18,8 +18,6 @@ const int BucketSizes[] = {
 
 #pragma pack(1)
 
-constexpr size_t max(size_t a, size_t b) { return a > b ? a : b; }
-
 struct FileHeader {
     int num_files;
 };

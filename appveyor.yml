@@ -52,7 +52,6 @@ build_script:
     }
 test_script:
 - ps: |
-    .\unittest
     if ($LastExitCode -ne 0) {
         throw "Exec: $ErrorMessage"
     }

@@ -33,7 +33,7 @@ private:
 
     static int used_memory__, memory_limit__;
     static LruMap view_map__;
-    static std::map<int, int> size_map__;
+    static std::map<FD, int> size_map__;
     std::string filename_;
     FD fd_;
     MemoryMappedFileImpl *impl_;
@@ -59,11 +59,11 @@ private:
 
     void *map(FD fd, int size);
 
-    void unmap(void *view, FD size);
+    void unmap(void *view, int size);
 
     bool isExist(const std::string &filename);
 
-#ifdef WIN32_
+#ifdef _WIN32
     HANDLE map_handle_ = INVALID_HANDLE_VALUE;
 #endif
 
