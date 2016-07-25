@@ -12,20 +12,20 @@ namespace naivedb {
 
 
 int MemoryMappedFileImpl::openFile(const std::string &filename) {
-    int fd = ::open(filename.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+    FD fd = ::open(filename.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
     if (fd < 0) {
         // TODO
     }
     return fd;
 }
 
-void MemoryMappedFileImpl::closeFile(int fd) {
+void MemoryMappedFileImpl::closeFile(FD fd) {
     assert(fd >= 0);
     close(fd);
 }
 
 
-int MemoryMappedFileImpl::getFileSize(int fd) {
+int MemoryMappedFileImpl::getFileSize(FD fd) {
     assert(fd >= 0);
     struct stat status;
     if (fstat(fd, &status) < 0) {
@@ -34,7 +34,7 @@ int MemoryMappedFileImpl::getFileSize(int fd) {
     return status.st_size;
 }
 
-void MemoryMappedFileImpl::extendSize(int fd, int size) {
+void MemoryMappedFileImpl::extendSize(FD fd, int size) {
     assert(fd >= 0);
     assert(size > 0);
     if (lseek(fd, size - 1, SEEK_SET) < 0) {
@@ -49,7 +49,7 @@ bool MemoryMappedFileImpl::isExist(const std::string &filename) {
     return access(filename.c_str(), R_OK | W_OK) == 0;
 }
 
-void *MemoryMappedFileImpl::map(int fd, int size) {
+void *MemoryMappedFileImpl::map(FD fd, int size) {
     assert(fd >= 0);
     assert(size > 0);
     void *view = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);

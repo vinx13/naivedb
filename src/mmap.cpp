@@ -8,12 +8,12 @@ int MemoryMappedFile::used_memory__ = 0, MemoryMappedFile::memory_limit__ = 1024
 LruMap MemoryMappedFile::view_map__;
 std::map<int, int> MemoryMappedFile::size_map__;
 
-MemoryMappedFile::MemoryMappedFile(const std::string &filename) : filename_(filename), fd_(-1) {
+MemoryMappedFile::MemoryMappedFile(const std::string &filename) : filename_(filename), fd_(InvalidFD) {
     impl_ = new MemoryMappedFileImpl();
 }
 
 MemoryMappedFile::~MemoryMappedFile() {
-    if (fd_ >= 0) {
+    if (fd_ != InvalidFD) {
         close();
     }
     delete impl_;
@@ -27,7 +27,7 @@ void MemoryMappedFile::open() {
 
 void *MemoryMappedFile::get(int offset) {
     assert(offset >= 0);
-    if (fd_ < 0) open();
+    if (fd_ == InvalidFD) open();
     void *view = view_map__.get(fd_);
     if (view == nullptr) {
         view = map();
@@ -59,11 +59,11 @@ void MemoryMappedFile::close() {
         used_memory__ -= size;
     }
     size_map__.erase(fd_);
-    fd_ = -1;
+    fd_ = InvalidFD;
 }
 
 void *MemoryMappedFile::map() {
-    assert(fd_ >= 0);
+    assert(fd_ != InvalidFD);
     int size = size_map__[fd_];
     assert(size > 0);
     while (used_memory__ + size > memory_limit__) {

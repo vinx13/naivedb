@@ -5,16 +5,12 @@
 #include <map>
 #include <string>
 
+#include "platform.h"
 #include "lrumap.h"
 
 namespace naivedb {
 
-#ifdef _WIN32
-#include <windows.h>
-typedef HANDLE FD;
-#else
-typedef int FD;
-#endif
+
 
 class MemoryMappedFileImpl;
 
@@ -39,7 +35,7 @@ private:
     static LruMap view_map__;
     static std::map<int, int> size_map__;
     std::string filename_;
-    int fd_;
+    FD fd_;
     MemoryMappedFileImpl *impl_;
 
     void * map();
@@ -53,19 +49,24 @@ private:
 
     void create(int size);
 
-    void extendSize(int fd, int size);
+    void extendSize(FD fd, int size);
 
-    int openFile(const std::string &filename);
+    FD openFile(const std::string &filename);
 
-    void closeFile(int fd);
+    void closeFile(FD fd);
 
-    int getFileSize(int fd);
+    int getFileSize(FD fd);
 
-    void *map(int fd, int size);
+    void *map(FD fd, int size);
 
-    void unmap(void *view, int size);
+    void unmap(void *view, FD size);
 
     bool isExist(const std::string &filename);
+
+#ifdef WIN32_
+    HANDLE map_handle_ = INVALID_HANDLE_VALUE;
+#endif
+
 };
 
 

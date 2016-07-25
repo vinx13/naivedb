@@ -7,6 +7,7 @@
 #include <utility>
 #include <unordered_map>
 
+#include "platform.h"
 
 namespace naivedb {
 
@@ -14,7 +15,7 @@ namespace naivedb {
 class LruMap {
 public:
 
-    typedef int Key;
+    typedef FD Key;
     typedef void *Value;
     typedef std::pair<Key, Value> Pair;
     typedef std::list<Pair> Items;
