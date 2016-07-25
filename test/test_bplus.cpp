@@ -1,8 +1,6 @@
 #include <gtest/gtest.h>
-#include <cstdlib>
 #include "dbstore.h"
 #include "bplus.h"
-#include "bplusnode.h"
 
 using namespace naivedb;
 
@@ -44,11 +42,11 @@ TEST(BPlusNodeTest, Find) {
 
 }
 
-TEST(BPlusTest, SimpleInsert) {
+TEST(BPlusTest, SimpleTest) {
     std::srand(0);
     DBStore db_store(std::tmpnam(nullptr));
     BPlus bplus(&db_store);
-    std::map<std::string, int> dict;
+    std::map<std::string, int> items;
 
     int n = 102400;
     for (int i = 0; i < n; i++) {
@@ -56,15 +54,23 @@ TEST(BPlusTest, SimpleInsert) {
 
         int v = rand();
 
-        dict[k] = v;
+        items[k] = v;
         bplus.set(k.c_str(), reinterpret_cast<const void *>(&v), sizeof(v), true);
     }
     char buf[1024];
     int len;
 
-    for (auto &s:dict) {
+    for (auto &s:items) {
         int len = bplus.get(s.first.c_str(), reinterpret_cast<void *>(buf));
         EXPECT_EQ(0, std::memcmp(buf, &s.second, len));
+    }
+
+    for (auto &pair:items) {
+        bplus.remove(pair.first.c_str());
+    }
+    for (auto &pair:items) {
+        int len = bplus.get(pair.first.c_str(), reinterpret_cast<void *>(buf));
+        EXPECT_EQ(0, len);
     }
 }
 
