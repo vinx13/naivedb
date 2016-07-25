@@ -13,7 +13,7 @@ void LruMap::put(const Key &key, const Value value) {
     items_map_[key] = items_.begin();
 }
 
-Value LruMap::get(const Key &key) {
+LruMap::Value LruMap::get(const Key &key) {
     auto it = items_map_.find(key);
     if (it == items_map_.end()) {
         return nullptr;
@@ -22,7 +22,7 @@ Value LruMap::get(const Key &key) {
     return it->second->second;
 }
 
-Value LruMap::removeLru() {
+LruMap::Value LruMap::removeLru() {
     auto pair = items_.back();
     items_map_.erase(pair.first);
     Value value = pair.second;

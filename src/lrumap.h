@@ -12,6 +12,12 @@ namespace naivedb {
 
 
 class LruMap {
+
+    typedef std::string Key;
+    typedef void *Value;
+    typedef std::pair<Key, Value> Pair;
+    typedef std::list<Pair> Items;
+
 public:
 
     void put(const Key &key, const Value value);
@@ -21,10 +27,7 @@ public:
     Value removeLru();
 
 private:
-    typedef std::string Key;
-    typedef void *Value;
-    typedef std::pair<Key, Value> Pair;
-    typedef std::list<Pair> Items;
+
     std::unordered_map<Key, Items::iterator> items_map_;
     Items items_;
 };
