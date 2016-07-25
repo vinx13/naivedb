@@ -32,3 +32,4 @@
 .Po
 build/
 .DS_Store
+extern/

@@ -17,12 +17,10 @@ configuration:
   - Release
   - Debug
 
-before_build:
-- appveyor DownloadFile http://googletest.googlecode.com/files/gtest-1.7.0.zip -FileName gtest-1.7.0.zip
-- 7z x gtest-1.7.0.zip > NUL
-- cmake -DBUILD_SHARED_LIBS=ON gtest-1.7.0
-- cmake --build . --config Release
+install:
+- git submodule update --init googletest
 
+before_build:
 - ps: |
     Write-Output "Configuration: $env:CONFIGURATION"
     Write-Output "Platform: $env:PLATFORM"

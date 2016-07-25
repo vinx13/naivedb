@@ -28,20 +28,16 @@ set(TEST_FILES
 
 add_library(naivedb ${SOURCE_FILES})
 
+add_subdirectory("extern/googletest/googletest" "${CMAKE_CURRENT_BINARY_DIR}/googletest")
+include_directories("extern/googletest/googletest/include" src)
 
-find_package(GTest)
-if (GTEST_FOUND)
-    #enable_testing()
-    include_directories(${GTEST_INCLUDE_DIRS} src /usr/include)
-    add_executable(unittest ${TEST_FILES})
-    target_link_libraries(unittest ${GTEST_BOTH_LIBRARIES} naivedb pthread)
-    #add_test(alltests unittest)
+add_executable(unittest ${TEST_FILES})
+target_link_libraries(unittest gtest gtest_main naivedb pthread)
 
-    cmake_policy(PUSH)
-    if (POLICY CMP0037)
-        cmake_policy(SET CMP0037 OLD)
-    endif ()
-    add_custom_target(test make && ./unittest)
-    cmake_policy(POP)
 
+cmake_policy(PUSH)
+if (POLICY CMP0037)
+    cmake_policy(SET CMP0037 OLD)
 endif ()
+add_custom_target(test make && ./unittest)
+cmake_policy(POP)
