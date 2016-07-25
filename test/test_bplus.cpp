@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
+#include <cstdlib>
 #include "dbstore.h"
+#include "bplus.h"
 #include "bplusnode.h"
 
 using namespace naivedb;
@@ -28,13 +30,42 @@ TEST(BPlusNodeTest, Find) {
         loc_index = db_store.allocIndex();
 
     BPlusNode node(loc_index, &db_store);
+    node.asLeaf();
+    node.init();
     node.addKey(0, loc1);
     node.addKey(1, loc2);
     node.addKey(2, loc3);
     EXPECT_TRUE(node.find(key4) < 0);
     EXPECT_EQ(0, node.find(key1));
     EXPECT_EQ(2, node.find(key3));
-    EXPECT_EQ(1, node.upperBound(key1));
-    EXPECT_EQ(3, node.upperBound(key4));
+    EXPECT_EQ(1, node.upperBound(key1, true));
+    EXPECT_EQ(0, node.upperBound(key1, false));
+    EXPECT_EQ(3, node.upperBound(key4, true));
 
 }
+
+TEST(BPlusTest, SimpleInsert) {
+    std::srand(0);
+    DBStore db_store(std::tmpnam(nullptr));
+    BPlus bplus(&db_store);
+    std::map<std::string, int> dict;
+
+    int n = 102400;
+    for (int i = 0; i < n; i++) {
+        std::string k = std::to_string(rand());
+
+        int v = rand();
+
+        dict[k] = v;
+        bplus.set(k.c_str(), reinterpret_cast<const void *>(&v), sizeof(v), true);
+    }
+    char buf[1024];
+    int len;
+
+    for (auto &s:dict) {
+        int len = bplus.get(s.first.c_str(), reinterpret_cast<void *>(buf));
+        EXPECT_EQ(0, std::memcmp(buf, &s.second, len));
+    }
+}
+
+

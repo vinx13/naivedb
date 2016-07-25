@@ -20,7 +20,9 @@ set(SOURCE_FILES
 set(TEST_FILES
         test/test_mmap.cpp
         test/test_storage.cpp
-        test/test_lrumap.cpp)
+        test/test_lrumap.cpp
+        test/test_bplus.cpp
+        )
 
 add_library(naivedb ${SOURCE_FILES})
 
