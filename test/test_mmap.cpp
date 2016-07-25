@@ -30,7 +30,6 @@ TEST(MMapTest, BasicRead) {
     os.close();
 
     MemoryMappedFile file(filename);
-    ASSERT_NO_THROW(file.open());
     void *view = file.get();
     ASSERT_FALSE(std::memcmp(view, s, sizeof(s)));
 }
