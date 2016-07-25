@@ -6,11 +6,13 @@
 #include "storage.h"
 #include "dbstore.h"
 #include "bplusdata.h"
+#include "bplusnode.h"
 
 namespace naivedb {
 
 
 class DBStore;
+
 class BPlusNode;
 
 class BPlus {
@@ -48,6 +50,8 @@ private:
     void rcopyK(BPlusNode *src, int isrc, BPlusNode *dest, int idest);
 
     void rcopyC(BPlusNode *src, int isrc, BPlusNode *dest, int idest);
+
+    void lcopyKV(BPlusNode *src, int isrc, BPlusNode *dest, int idest);
 };
 
 

@@ -1,7 +1,6 @@
 #include <cstring>
 
 #include "bplus.h"
-#include "bplusnode.h"
 
 namespace naivedb {
 
@@ -19,7 +18,6 @@ BPlus::BPlus(DBStore *db_store) : db_store_(db_store) {
 }
 
 BPlus::~BPlus() {
-    //TODO //deleteTree(root_);
 }
 
 
@@ -208,7 +206,6 @@ void BPlus::insertAtInternal(Location key, Location child, std::stack<Location> 
             parent.removeKey(mid);
             child = new_node_loc;
         }
-
     }
 }
 
@@ -222,6 +219,41 @@ void BPlus::makeNewRoot(const Location &key, const Location &child) {
     new_root.addChild(1, child);
     db_store_->setRoot(new_root_loc);
     root_ = new_root_loc;
+}
+
+void BPlus::remove(const char *key) {
+    std::stack<Location> parents;
+    BPlusNode leaf(findLeaf(key, &parents), db_store_);
+    int index = leaf.find(key);
+    if (index < 0) {
+        // TODO key not found
+        return;
+    }
+    db_store_->removeData(leaf.getKeyLoc(index));
+    db_store_->removeData(leaf.getValueLoc(index));
+    leaf.removeKey(index);
+    leaf.removeValue(index);
+
+    lcopyKV(&leaf, index + 1, &leaf, index);
+
+}
+
+
+void BPlus::lcopyKV(BPlusNode *src, int isrc, BPlusNode *dest, int idest) {
+    Location loc;
+    if (isrc >= TreeOrder - 1)
+        return;
+    loc = src->getKeyLoc(isrc);
+    while (!loc.isNull()) {
+        dest->addKey(idest, loc);
+        dest->addValue(idest, src->getValueLoc(isrc));
+        src->removeKey(isrc);
+        src->removeValue(isrc);
+        ++isrc;
+        ++idest;
+        if (isrc == TreeOrder - 1) break;
+        loc = src->getKeyLoc(isrc);
+    }
 }
 
 
