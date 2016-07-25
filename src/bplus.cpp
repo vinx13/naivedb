@@ -21,19 +21,19 @@ BPlus::~BPlus() {
 }
 
 
-void BPlus::get(const char *key, void *value, int *len) {
+int BPlus::get(const char *key, void *value) {
     Location location = findLeaf(key, nullptr);
     BPlusNode leaf(location, db_store_);
     assert(leaf.isLeaf());
     int index = leaf.find(key);
     if (index < 0) {
         // TODO not found
-        *len = 0;
-        return;
+        return  0;
     }
     DataRecord *record = leaf.getValueRec(index);
-    *len = record->data_size;
-    std::memcpy(value, record->getData(), *len);
+    int len = record->data_size;
+    std::memcpy(value, record->getData(), len);
+    return len;
 }
 
 

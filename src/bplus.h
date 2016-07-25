@@ -26,7 +26,7 @@ public:
 
     void set(const char *key, const void *value, int len, bool overwrite = false);
 
-    void get(const char *key, void *value, int *len);
+    int get(const char *key, void *value);
 
 private:
 
