@@ -23,6 +23,7 @@ LruMap::Value LruMap::get(const Key &key) {
 }
 
 LruMap::Value LruMap::removeLru() {
+    assert(!items_.empty());
     auto pair = items_.back();
     items_map_.erase(pair.first);
     Value value = pair.second;
