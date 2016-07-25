@@ -25,6 +25,8 @@ public:
 
     Pair removeLru();
 
+    void erase(const Key &key);
+
 private:
 
     std::unordered_map<Key, Items::iterator> items_map_;

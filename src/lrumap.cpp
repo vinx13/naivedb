@@ -31,4 +31,10 @@ LruMap::Pair LruMap::removeLru() {
 }
 
 
+void LruMap::erase(const Key &key) {
+    auto it = items_map_.find(key);
+    assert(it != items_map_.end());
+    items_.erase(it->second);
+    items_map_.erase(it);
+}
 }

@@ -1,9 +1,10 @@
 #include <cassert>
+#include <iostream>
 #include "mmap.h"
 
 namespace naivedb {
 
-int MemoryMappedFile::used_memory__ = 0, MemoryMappedFile::memory_limit__ = 1024*1024*256;
+int MemoryMappedFile::used_memory__ = 0, MemoryMappedFile::memory_limit__ = 1024 * 1024 * 256;
 LruMap MemoryMappedFile::view_map__;
 std::map<int, int> MemoryMappedFile::size_map__;
 
@@ -49,12 +50,20 @@ void MemoryMappedFile::create(int size) {
 
 void MemoryMappedFile::close() {
     impl_->closeFile(fd_);
+    void *view = view_map__.get(fd_);
+    if (view) {
+        int size = size_map__.at(fd_);
+        assert(size > 0);
+        impl_->unmap(view, size);
+        view_map__.erase(fd_);
+        used_memory__ -= size;
+    }
     size_map__.erase(fd_);
     fd_ = -1;
-    // TODO unmap?
 }
 
 void *MemoryMappedFile::map() {
+    std::cout << "map\n";
     assert(fd_ >= 0);
     int size = size_map__[fd_];
     assert(size > 0);
@@ -65,7 +74,10 @@ void *MemoryMappedFile::map() {
         impl_->unmap(pair.second, size);
         used_memory__ -= size;
     }
-    return impl_->map(fd_, size);
+    used_memory__ += size;
+    void *view = impl_->map(fd_, size);
+    view_map__.put(fd_, view);
+    return view;
 }
 
 
