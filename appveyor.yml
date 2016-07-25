@@ -18,7 +18,7 @@ configuration:
   - Debug
 
 install:
-- git submodule update --init googletest
+- git submodule update --init
 
 before_build:
 - ps: |
