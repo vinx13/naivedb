@@ -11,12 +11,14 @@ set(SOURCE_FILES
         src/dbstore.cpp
         src/file.cpp
         src/indexfile.cpp
-        src/bplusnode.cpp)
+        src/bplusnode.cpp
+        src/bplus.cpp
+        src/lrumap.cpp
+        )
 
 set(TEST_FILES
         test/test_mmap.cpp
         test/test_storage.cpp
-        test/test_bplus.cpp
         )
 
 add_library(naivedb ${SOURCE_FILES})

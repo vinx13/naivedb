@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <datafile.h>
+#include <cstring>
 #include "dbstore.h"
 #include "indexfile.h"
 
