@@ -1,5 +1,5 @@
 #include <cassert>
-#include <iostream>
+
 #include "mmap.h"
 
 namespace naivedb {
@@ -63,7 +63,6 @@ void MemoryMappedFile::close() {
 }
 
 void *MemoryMappedFile::map() {
-    std::cout << "map\n";
     assert(fd_ >= 0);
     int size = size_map__[fd_];
     assert(size > 0);
