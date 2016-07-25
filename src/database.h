@@ -1,34 +1,39 @@
 #ifndef NAIVEDB_DATABASE_H
 #define NAIVEDB_DATABASE_H
 
-#include "storage.h"
-#include "file.h"
-#include "bplus.h"
-#include <memory>
+#include <string>
 
 namespace naivedb {
 
+class DBStore;
+class BPlus;
+
 class Database {
+
 public:
+
     Database(const std::string &database);
 
     ~Database();
 
-    void get(const char *key, void **value, int *len);
+    int get(const std::string &key, void *value);
 
-    void set(const char *key, const void *value, int len, bool overwrite);
+    void set(const std::string &key, const void *value, int len, bool overwrite);
 
-    void remove(const char *key);
+    void remove(const std::string &key);
 
 private:
 
-    DBStore *db_store_;
+    Database(const Database &) = delete;
 
-    BPlus *tree_;
+    Database &operator=(const Database &) = delete;
 
     const std::string db_name_;
+    DBStore *db_store_;
+    BPlus *bplus_;
 
 };
+
 
 }
 

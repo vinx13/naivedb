@@ -1,28 +1,30 @@
 #include "database.h"
+#include "bplus.h"
+
 
 namespace naivedb {
 
+
 Database::Database(const std::string &database) : db_name_(database) {
     db_store_ = new DBStore(database);
-    tree_ = new BPlus(db_store_);
-
+    bplus_ = new BPlus(db_store_);
 }
 
 Database::~Database() {
     delete db_store_;
-    delete tree_;
+    delete bplus_;
 }
 
-void Database::get(const char *key, void **value, int *len) {
-    tree_->get(key, value, len);
+int Database::get(const std::string &key, void *value) {
+    return bplus_->get(key.c_str(), value);
 }
 
-void Database::set(const char *key, const void *value, int len, bool overwrite = false) {
-    tree_->set(key, value, len, overwrite);
+void Database::set(const std::string &key, const void *value, int len, bool overwrite) {
+    bplus_->set(key.c_str(), value, len, overwrite);
 }
 
-void Database::remove(const char *key) {
-    tree_->remove(key);
+void Database::remove(const std::string &key) {
+    bplus_->remove(key.c_str());
 }
 
 
