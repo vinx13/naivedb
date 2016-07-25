@@ -22,13 +22,12 @@ LruMap::Value LruMap::get(const Key &key) {
     return it->second->second;
 }
 
-LruMap::Value LruMap::removeLru() {
+LruMap::Pair LruMap::removeLru() {
     assert(!items_.empty());
     auto pair = items_.back();
     items_map_.erase(pair.first);
-    Value value = pair.second;
     items_.pop_back();
-    return value;
+    return pair;
 }
 
 

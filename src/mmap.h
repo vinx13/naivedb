@@ -4,7 +4,8 @@
 #include <memory>
 #include <map>
 #include <string>
-#include <tuple>
+
+#include "lrumap.h"
 
 namespace naivedb {
 
@@ -16,16 +17,14 @@ typedef int FD;
 #endif
 
 class MemoryMappedFileImpl;
+
 class MemoryMappedFile {
 public:
     MemoryMappedFile(const std::string &filename);
+
     ~MemoryMappedFile();
 
-    void open();
-
     void *get(int offset = 0);
-
-    void grow(int new_size);
 
     bool isExist();
 
@@ -34,17 +33,26 @@ public:
     void close();
 
 private:
+    void open();
+
+    static int used_memory__, memory_limit__;
+    static LruMap view_map__;
+    static std::map<int, int> size_map__;
     std::string filename_;
-    void *view_;
-    int size_;
     int fd_;
     MemoryMappedFileImpl *impl_;
+
+    void * map();
 };
 
 
-class MemoryMappedFileImpl{
+class MemoryMappedFileImpl {
     friend class MemoryMappedFile;
+
 private:
+
+    void create(int size);
+
     void extendSize(int fd, int size);
 
     int openFile(const std::string &filename);
@@ -59,6 +67,7 @@ private:
 
     bool isExist(const std::string &filename);
 };
+
 
 }
 

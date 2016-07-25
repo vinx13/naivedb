@@ -17,9 +17,7 @@ class FileMgr {
 public:
     FileMgr(const std::string &prefix, int file_size);
 
-    virtual ~FileMgr() {
-        closeAllFiles();
-    }
+    virtual ~FileMgr();
 
     void init();
 

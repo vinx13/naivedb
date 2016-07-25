@@ -6,6 +6,10 @@ namespace naivedb {
 FileMgr::FileMgr(const std::string &prefix, int file_size) : prefix_(prefix), file_size_(file_size) {
 }
 
+FileMgr::~FileMgr() {
+    closeAllFiles();
+}
+
 void FileMgr::openAllFiles(int num_files) {
     for (int i = 1; i <= num_files; i++) {
         files_.push_back(new MemoryMappedFile(getFileName(i)));

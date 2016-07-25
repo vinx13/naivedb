@@ -3,65 +3,70 @@
 
 namespace naivedb {
 
+int MemoryMappedFile::used_memory__ = 0, MemoryMappedFile::memory_limit__ = 1024*1024*256;
+LruMap MemoryMappedFile::view_map__;
+std::map<int, int> MemoryMappedFile::size_map__;
 
-MemoryMappedFile::MemoryMappedFile(const std::string &filename) : filename_(filename), size_(0), fd_(-1) ,view_(nullptr){
+MemoryMappedFile::MemoryMappedFile(const std::string &filename) : filename_(filename), fd_(-1) {
     impl_ = new MemoryMappedFileImpl();
 }
 
 MemoryMappedFile::~MemoryMappedFile() {
-    if (view_) {
-        impl_->closeFile(fd_);
-        impl_->unmap(view_, size_);
+    if (fd_ >= 0) {
+        close();
     }
     delete impl_;
 }
 
+void MemoryMappedFile::open() {
+    fd_ = impl_->openFile(filename_);
+    assert(size_map__.find(fd_) == size_map__.end());
+    size_map__[fd_] = impl_->getFileSize(fd_);
+}
+
 void *MemoryMappedFile::get(int offset) {
-    assert(view_);
     assert(offset >= 0);
-    return static_cast<void*>(static_cast<char *>(view_)+offset);
+    if (fd_ < 0) open();
+    void *view = view_map__.get(fd_);
+    if (view == nullptr) {
+        view = map();
+    }
+    return reinterpret_cast<void *>(reinterpret_cast<char *>(view) + offset);
 }
 
 
 bool MemoryMappedFile::isExist() {
     return impl_->isExist(filename_);
-
 }
-
-void MemoryMappedFile::open() {
-    fd_ = impl_->openFile(filename_);
-    size_ = impl_->getFileSize(fd_);
-    view_ = impl_->map(fd_, size_);
-}
-
-void MemoryMappedFile::grow(int new_size) {
-    if (view_) {
-        impl_->unmap(view_, size_);
-    } else {
-        open();
-    }
-    impl_->extendSize(fd_, new_size);
-    size_ = new_size;
-    impl_->map(fd_, size_);
-}
-
 
 void MemoryMappedFile::create(int size) {
     fd_ = impl_->openFile(filename_);
     impl_->extendSize(fd_, size);
-    size_ = size;
-    view_ = impl_->map(fd_, size_);
+    assert(size_map__.find(fd_) == size_map__.end());
+    size_map__[fd_] = size;
 }
 
 
 void MemoryMappedFile::close() {
-    impl_->unmap(view_, size_);
     impl_->closeFile(fd_);
+    size_map__.erase(fd_);
     fd_ = -1;
-    size_ = 0;
-    view_ = nullptr;
+    // TODO unmap?
 }
 
+void *MemoryMappedFile::map() {
+    assert(fd_ >= 0);
+    int size = size_map__[fd_];
+    assert(size > 0);
+    while (used_memory__ + size > memory_limit__) {
+        auto pair = view_map__.removeLru();
+        int size = size_map__[pair.first];
+        assert(size > 0);
+        impl_->unmap(pair.second, size);
+        used_memory__ -= size;
+    }
+    return impl_->map(fd_, size);
+}
 
 
 }
