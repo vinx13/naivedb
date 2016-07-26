@@ -36,7 +36,7 @@ void IndexFileMgr::collect(const Location &location) {
 void IndexFileMgr::initFile(int file_no) {
     IndexRecord *cur = reinterpret_cast<IndexRecord *>(get({file_no, 0}));
 
-    void *end = reinterpret_cast<void *>(reinterpret_cast<char *>(cur) + DefaultIndexFileSize);
+    // void *end = reinterpret_cast<void *>(reinterpret_cast<char *>(cur) + DefaultIndexFileSize);
     int cur_ofs = 0;
     const int record_size = sizeof(IndexRecord), size = DefaultIndexFileSize;
     while (true) {

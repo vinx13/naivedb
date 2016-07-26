@@ -7,10 +7,10 @@ namespace naivedb {
 #pragma pack(1)
 
 struct Location {
+    static Location None;
+
     int file_no;
     int offset;
-
-    Location(int file_no = -1, int offset = 0) : file_no(file_no), offset(offset) { }
 
     void init() { file_no = -1; offset = 0; }
 

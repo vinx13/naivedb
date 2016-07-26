@@ -7,6 +7,7 @@
 
 namespace naivedb {
 
+Location Location::None = {-1,0};
 
 DBStore::DBStore(const std::string &database) :
     database_(database),

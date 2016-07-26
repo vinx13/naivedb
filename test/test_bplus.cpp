@@ -61,7 +61,6 @@ TEST(BPlusTest, SimpleTest) {
         bplus.set(k.c_str(), reinterpret_cast<const void *>(&v), sizeof(v), true);
     }
     char buf[1024];
-    int len;
 
     for (auto &s:items) {
         int len = bplus.get(s.first.c_str(), reinterpret_cast<void *>(buf));

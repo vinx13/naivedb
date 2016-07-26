@@ -16,7 +16,8 @@ set(SOURCE_FILES
         src/bplusnode.cpp
         src/bplus.cpp
         src/database.cpp
-        src/platform.h)
+        src/platform.h
+        )
 
 set(TEST_FILES
         test/test_mmap.cpp

@@ -93,7 +93,7 @@ Location BPlus::insertAtLeaf(BPlusNode &leaf, const Location &key_loc, const Loc
         rcopyKV(&leaf, index, &leaf, index + 1);
         leaf.addKey(index, key_loc);
         leaf.addValue(index, value_loc);
-        return Location();
+        return Location::None;
     }
 
     Location new_node_loc = db_store_->allocIndex();
