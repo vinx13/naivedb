@@ -1,4 +1,3 @@
-#include <iostream>
 #include "datafile.h"
 
 namespace naivedb {
@@ -46,13 +45,6 @@ void DataFileMgr::collect(const Location &location) {
     addToHead(location);
 }
 
-int DataFileMgr::getSuggestedBucketFetch(int min_size) const {
-    for (int i = 0; i < NumBucket; i++) {
-        if (BucketSizes[i] >= min_size)
-            return i;
-    }
-    return NumBucket - 1;
-}
 
 DataFileHeader *DataFileMgr::getDataHeader() {
     return reinterpret_cast<DataFileHeader *>(getFileHeader());
@@ -124,10 +116,21 @@ void DataFileMgr::addToHead(const Location &loc) {
     header->empty_heads[bucket] = loc;
 }
 
+int DataFileMgr::getSuggestedBucketFetch(int min_size) const {
+    for (int i = 0; i < NumBucket; i++) {
+        if (BucketSizes[i] >= min_size)
+            return i;
+    }
+    return NumBucket - 1;
+}
+
 int DataFileMgr::getSuggestedBucketPut(int size) {
-    if(size >= BucketSizes[NumBucket - 1])
-        return NumBucket - 1;
-    return getSuggestedBucketFetch(size) - 1;
+    int i;
+    for(i = 0 ; i <NumBucket; i++){
+        if(BucketSizes[i] > size)
+            break;
+    }
+    return --i;
 }
 
 Location DataFileMgr::getFromHead(int bucket) {
