@@ -57,3 +57,5 @@ test_script:
     if ($LastExitCode -ne 0) {
           throw "Exec: $ErrorMessage"
     }
+    .\db_benchmark.exe
+    .\db_benchmark2.exe

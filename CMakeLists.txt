@@ -28,17 +28,23 @@ set(TEST_FILES
 
 add_library(naivedb ${SOURCE_FILES})
 
-add_subdirectory("extern/googletest" "${CMAKE_CURRENT_BINARY_DIR}/googletest")
-include_directories("extern/googletest/include" src)
-
-add_executable(unittest ${TEST_FILES})
-target_link_libraries(unittest gtest gtest_main naivedb)
-
 if (WIN32)
     target_link_libraries(naivedb Shlwapi)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
 endif ()
+
+add_subdirectory("extern/googletest" "${CMAKE_CURRENT_BINARY_DIR}/googletest")
+add_subdirectory("extern/benchmark" "${CMAKE_CURRENT_BINARY_DIR}/benchmark")
+include_directories("extern/googletest/include" "extern/benchmark/include" src)
+
+add_executable(unittest ${TEST_FILES})
+target_link_libraries(unittest gtest gtest_main naivedb)
+
+add_executable(db_benchmark benchmark/benchmark.cpp benchmark/util.cpp)
+add_executable(db_benchmark2 benchmark/benchmark2.cpp benchmark/util.cpp)
+target_link_libraries(db_benchmark naivedb benchmark)
+target_link_libraries(db_benchmark2 naivedb)
 
 cmake_policy(PUSH)
 if (POLICY CMP0037)

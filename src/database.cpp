@@ -1,11 +1,12 @@
 #include "database.h"
 #include "bplus.h"
-
+#include "mmap.h"
+#include <iostream>
 
 namespace naivedb {
 
-
-Database::Database(const std::string &database) : db_name_(database) {
+Database::Database(const std::string &database, const DatabaseOption &option) : db_name_(database) {
+    MemoryMappedFile::setMemoryLimitation(option.memory_limitation);
     db_store_ = new DBStore(database);
     bplus_ = new BPlus(db_store_);
 }

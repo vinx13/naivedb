@@ -15,6 +15,9 @@ class MemoryMappedFileImpl;
 
 class MemoryMappedFile {
 public:
+
+    static void setMemoryLimitation(int memory_limitation) { MemoryMappedFile::memory_limitation__ = memory_limitation; }
+
     MemoryMappedFile(const std::string &filename);
 
     ~MemoryMappedFile();
@@ -30,7 +33,7 @@ public:
 private:
     void open();
 
-    static int used_memory__, memory_limit__;
+    static int used_memory__, memory_limitation__;
     static LruMap<FD, void *> view_map__;
     static std::map<FD, int> size_map__;
     std::string filename_;

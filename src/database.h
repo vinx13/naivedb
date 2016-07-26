@@ -9,11 +9,15 @@ class DBStore;
 
 class BPlus;
 
+struct DatabaseOption {
+    int memory_limitation = 1024 * 1024 * 1024;
+};
+
 class Database {
 
 public:
 
-    Database(const std::string &database);
+    Database(const std::string &database, const DatabaseOption &option = DatabaseOption());
 
     ~Database();
 

@@ -10,6 +10,8 @@ script:
   - cmake ./
   - make
   - make test
+  - ./db_benchmark
+  - ./db_benchmark2
 addons:
   apt:
     sources:
