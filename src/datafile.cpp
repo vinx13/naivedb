@@ -7,9 +7,10 @@ DataFileMgr::DataFileMgr(const std::string &filename) : FileMgr(filename, Defaul
 }
 
 void DataFileMgr::initFile(int file_no) {
-    DataRecord *first = recordAt({file_no, 0});
+    int start = file_no == 0 ? sizeof(DataFileHeader) : 0;
+    DataRecord *first = recordAt({file_no, start});
     first->block_size = DefaultDataFileSize - sizeof(first->block_size);
-    addToHead({file_no, 0});
+    addToHead({file_no, start});
 }
 
 void DataFileMgr::initHeader() {
