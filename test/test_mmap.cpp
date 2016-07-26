@@ -6,7 +6,16 @@
 
 using namespace naivedb;
 
-TEST(MMapTest, CheckExist) {
+class MMapTest : public ::testing::Test {
+
+protected:
+    virtual void SetUp() {
+        MemoryMappedFile::setMemoryLimitation(1024*1024*1024);
+    }
+
+};
+
+TEST_F(MMapTest, CheckExist) {
     char *filename = std::tmpnam(nullptr);
     std::ofstream os(filename);
     os.close();
@@ -16,13 +25,13 @@ TEST(MMapTest, CheckExist) {
 }
 
 
-TEST(MMapTest, CheckNotExist) {
+TEST_F(MMapTest, CheckNotExist) {
     char *filename = std::tmpnam(nullptr);
     MemoryMappedFile file(filename);
     ASSERT_FALSE(file.isExist());
 }
 
-TEST(MMapTest, BasicRead) {
+TEST_F(MMapTest, BasicRead) {
     char *filename = std::tmpnam(nullptr);
     std::ofstream os(filename);
     char s[] = "fooFOO";
@@ -35,7 +44,7 @@ TEST(MMapTest, BasicRead) {
 }
 
 
-TEST(MMapTest, BasicWrite) {
+TEST_F(MMapTest, BasicWrite) {
     char *filename = std::tmpnam(nullptr);
     MemoryMappedFile file(filename);
 
@@ -52,7 +61,7 @@ TEST(MMapTest, BasicWrite) {
     }
 }
 
-TEST(MMapTest, RandomWrite) {
+TEST_F(MMapTest, RandomWrite) {
     char *filename = std::tmpnam(nullptr);
     MemoryMappedFile file(filename);
     file.create(1024 * sizeof(int));
