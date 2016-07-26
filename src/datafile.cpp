@@ -83,7 +83,7 @@ Location DataFileMgr::getFreeLocation(int size_to_alloc) {
         loc = getFromHead(bucket);
         int available_size = recordAt(loc)->block_size;
         if (available_size < size_to_alloc) {
-            return Location();
+            return Location::None;
         }
     }
     removeEmptyLocation(bucket);

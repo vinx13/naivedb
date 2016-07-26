@@ -27,8 +27,7 @@ int BPlus::get(const char *key, void *value) {
     assert(leaf.isLeaf());
     int index = leaf.find(key);
     if (index < 0) {
-        // TODO not found
-        return 0;
+        throw NotFoundException();
     }
     DataRecord *record = leaf.getValueRec(index);
     int len = record->data_size;
@@ -47,7 +46,7 @@ Location BPlus::findLeaf(const char *key, std::stack<Location> *parents) {
         } else {
             if (parents) parents->push(location);
         }
-        int i = node.upperBound(key, false);
+        int i = node.upperBound(key, true);
         location = node.getChildLoc(i);
     }
 }
@@ -65,8 +64,7 @@ void BPlus::set(const char *key, const void *value, int len, bool overwrite) {
         dup = true;
     }
     if (!overwrite && dup) {
-        //TODO duplicate keys
-        return;
+        throw DuplicateException();
     }
     if (dup) {
         // overwrite old record
@@ -238,10 +236,12 @@ void BPlus::remove(const char *key) {
     BPlusNode leaf(findLeaf(key, &parents), db_store_);
     int index = leaf.find(key);
     if (index < 0) {
-        // TODO key not found
-        return;
+        throw NotFoundException();
     }
-    db_store_->removeData(leaf.getKeyLoc(index));
+
+    // DO NOT DELETE KEY as key is still in the tree
+    //db_store_->removeData(leaf.getKeyLoc(index));
+
     db_store_->removeData(leaf.getValueLoc(index));
     leaf.removeKey(index);
     leaf.removeValue(index);

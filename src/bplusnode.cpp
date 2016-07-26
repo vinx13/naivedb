@@ -1,4 +1,5 @@
 #include <cstring>
+#include <cassert>
 
 #include "bplusnode.h"
 
@@ -7,6 +8,7 @@ namespace naivedb {
 
 
 BPlusNode::BPlusNode(const Location &location, DBStore *db_store) : db_store_(db_store) {
+    assert(db_store_);
     data = db_store_->indexRecordAt(location)->getData();
 }
 
@@ -71,8 +73,8 @@ int BPlusNode::linearSearch(int lo, int hi, const char *key) {
 int BPlusNode::upperBound(const char *key, bool equal) {
     int i = 0;
     while (i < TreeOrder - 1) {
-        int cmp = data->keys[i].isNull() ? -1 : std::strcmp(key, getKey(i));
-        if ((equal ? cmp < 0 : cmp <= 0)) {
+        int cmp = data->keys[i].isNull() ? 1 : std::strcmp(getKey(i), key);
+        if ((equal ? cmp > 0 : cmp >= 0)) {
             break;
         }
         ++i;

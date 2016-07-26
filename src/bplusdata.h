@@ -5,7 +5,7 @@
 
 namespace naivedb {
 
-const int TreeOrder = 16;
+const int TreeOrder = 4;
 
 #pragma pack(1)
 

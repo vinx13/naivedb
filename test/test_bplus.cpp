@@ -51,7 +51,7 @@ TEST(BPlusTest, SimpleTest) {
     BPlus bplus(&db_store);
     std::map<std::string, int> items;
 
-    int n = 102400;
+    int n = 1024000;
     for (int i = 0; i < n; i++) {
         std::string k = std::to_string(rand());
 
@@ -63,16 +63,16 @@ TEST(BPlusTest, SimpleTest) {
     char buf[1024];
 
     for (auto &s:items) {
-        int len = bplus.get(s.first.c_str(), reinterpret_cast<void *>(buf));
+        int len;
+        EXPECT_NO_THROW((len = bplus.get(s.first.c_str(), reinterpret_cast<void *>(buf))));
         EXPECT_EQ(0, std::memcmp(buf, &s.second, len));
     }
 
     for (auto &pair:items) {
-        bplus.remove(pair.first.c_str());
+        EXPECT_NO_THROW(bplus.remove(pair.first.c_str()));
     }
     for (auto &pair:items) {
-        int len = bplus.get(pair.first.c_str(), reinterpret_cast<void *>(buf));
-        EXPECT_EQ(0, len);
+        EXPECT_THROW( bplus.get(pair.first.c_str(), reinterpret_cast<void *>(buf)), NotFoundException);
     }
 }
 
