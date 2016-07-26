@@ -43,9 +43,9 @@ build_script:
     {
         return
     }
-    md _build -Force | Out-Null
-    cd _build
-    & cmake -G "$generator" -DCMAKE_CONFIGURATION_TYPES="Debug;Release" ..
+    md build -Force | Out-Null
+    cd build
+    & cmake -G "$generator" -DCMAKE_CONFIGURATION_TYPES="Debug;Release" -Dgtest_disable_pthreads=ON ..
     if ($LastExitCode -ne 0) {
         throw "Exec: $ErrorMessage"
     }
@@ -54,4 +54,9 @@ build_script:
         throw "Exec: $ErrorMessage"
     }
 test_script:
-- .\unittest
+- ps: |
+    cd $env:CONFIGURATION
+    .\unittest.exe
+    if ($LastExitCode -ne 0) {
+          throw "Exec: $ErrorMessage"
+    }
