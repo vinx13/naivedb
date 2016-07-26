@@ -109,6 +109,9 @@ void DataFileMgr::addToHead(const Location &loc) {
     DataFileHeader *header = getDataHeader();
     DataRecord *record = recordAt(loc);
 
+    if(!isReusableSize(record->block_size))
+        return; // FIXME: we should make sure that the record is always reuseable
+
     int bucket = getSuggestedBucketPut(record->block_size);
 
     assert(bucket >= 0);
