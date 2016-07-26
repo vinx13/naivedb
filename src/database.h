@@ -32,13 +32,12 @@ public:
 
     template<class T, class = typename std::enable_if<std::is_pod<T>::value, bool>::type>
     void set(const std::string &key, const T &value, bool overwrite) {
-        set(key, reinterpret_cast<void *>(&value), sizeof(T), overwrite);
+        set(key, reinterpret_cast<const void *>(&value), sizeof(T), overwrite);
     };
 
 private:
 
-    Database(
-        const Database &) = delete;
+    Database(const Database &) = delete;
 
     Database &operator=(const Database &) = delete;
 

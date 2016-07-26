@@ -1,3 +1,4 @@
+#include <iostream>
 #include "datafile.h"
 
 namespace naivedb {
@@ -45,7 +46,7 @@ void DataFileMgr::collect(const Location &location) {
     addToHead(location);
 }
 
-int DataFileMgr::getSuggestedBucket(int min_size) const {
+int DataFileMgr::getSuggestedBucketFetch(int min_size) const {
     for (int i = 0; i < NumBucket; i++) {
         if (BucketSizes[i] >= min_size)
             return i;
@@ -64,7 +65,7 @@ void DataFileMgr::removeEmptyLocation(int bucket) {
 }
 
 Location DataFileMgr::getFreeLocation(int size_to_alloc) {
-    int bucket = getSuggestedBucket(size_to_alloc);
+    int bucket = getSuggestedBucketFetch(size_to_alloc);
 
     Location loc;
     while (bucket < NumBucket) {
@@ -81,6 +82,7 @@ Location DataFileMgr::getFreeLocation(int size_to_alloc) {
     if (bucket == NumBucket - 1) {
         // the size of last bucket is not limited, so either head of the last bucket is not null or a new file is created
         loc = getFromHead(bucket);
+        assert(!loc.isNull());
         int available_size = recordAt(loc)->block_size;
         if (available_size < size_to_alloc) {
             return Location::None;
@@ -114,9 +116,18 @@ void DataFileMgr::addToHead(const Location &loc) {
     assert(!loc.isNull());
     DataFileHeader *header = getDataHeader();
     DataRecord *record = recordAt(loc);
-    int bucket = getSuggestedBucket(record->block_size);
+
+    int bucket = getSuggestedBucketPut(record->block_size);
+
+    assert(bucket >= 0);
     record->next = header->empty_heads[bucket];
     header->empty_heads[bucket] = loc;
+}
+
+int DataFileMgr::getSuggestedBucketPut(int size) {
+    if(size >= BucketSizes[NumBucket - 1])
+        return NumBucket - 1;
+    return getSuggestedBucketFetch(size) - 1;
 }
 
 Location DataFileMgr::getFromHead(int bucket) {

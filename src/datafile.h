@@ -31,7 +31,7 @@ private:
 
     void removeEmptyLocation(int bucket);
 
-    int getSuggestedBucket(int min_size) const;
+    int getSuggestedBucketFetch(int min_size) const;
 
     int allocAt(const Location &location, int size);
 
@@ -44,6 +44,7 @@ private:
 
     void addToHead(const Location &loc);
 
+    int getSuggestedBucketPut(int size);
 };
 
 }
