@@ -1,17 +1,26 @@
 language: cpp
-compiler:
-  - clang
-  - gcc
+
+matrix:
+    include:
+        - compiler: clang
+          env: BUILD_TYPE=Debug
+        - compiler: clang
+          env: BUILD_TYPE=Release
+        - compiler: gcc
+          env: BUILD_TYPE=Debug
+        - compiler: gcc
+          env: BUILD_TYPE=Release
 
 install:
   - git submodule update --init
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 script:
-  - cmake ./
+  - mkdir build && cd build
+  - cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ..
   - make
   - make test
-  - ./db_benchmark
-  - ./db_benchmark2
+  - travis_wait 120 ./db_benchmark
+  - travis_wait 120 ./db_benchmark2
 addons:
   apt:
     sources:
