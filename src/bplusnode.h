@@ -71,6 +71,8 @@ private:
 
     BPlusNodeData *data;
 
+    Location location_;
+
     DBStore *db_store_;
 
     int linearSearch(int lo, int hi, const char *key);
@@ -78,6 +80,8 @@ private:
     int upperBound(const Location &location, bool equal);
 
     char *copyKey(const Location &location) const;
+
+    void resetData();
 };
 
 

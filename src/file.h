@@ -15,7 +15,7 @@ class DBStore;
 
 class FileMgr {
 public:
-    FileMgr(const std::string &prefix, int file_size);
+    FileMgr(const std::string &prefix);
 
     virtual ~FileMgr();
 
@@ -28,18 +28,18 @@ public:
 protected:
 
     virtual void initHeader() = 0;
+    virtual int getHeaderSize() = 0;
+    virtual int getFileSize() = 0;
     virtual void initFile(int file_no) = 0;
 
     const std::string prefix_;
     std::vector<MemoryMappedFile *> files_;
-    int file_size_;
 
     void createFile();
 
     void *get(const Location &location);
 
     std::string getFileName(int file_no);
-
 
     FileHeader *getFileHeader();
 

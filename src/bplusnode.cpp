@@ -1,5 +1,4 @@
 #include <cstring>
-#include <cassert>
 
 #include "bplusnode.h"
 
@@ -7,9 +6,9 @@
 namespace naivedb {
 
 
-BPlusNode::BPlusNode(const Location &location, DBStore *db_store) : db_store_(db_store) {
+BPlusNode::BPlusNode(const Location &location, DBStore *db_store) : db_store_(db_store), location_(location) {
     assert(db_store_);
-    data = db_store_->indexRecordAt(location)->getData();
+    resetData();
 }
 
 bool BPlusNode::isFull() { return !data->keys[TreeOrder - 1 - 1].isNull(); }
@@ -35,16 +34,19 @@ Location BPlusNode::getValueLoc(int i) const {
 }
 
 DataRecord *BPlusNode::getValueRec(int i) {
+    resetData();
     return db_store_->dataRecordAt(getValueLoc(i));
 }
 
 IndexRecord *BPlusNode::getChildRec(int i) {
+    resetData();
     return db_store_->indexRecordAt(getChildLoc(i));
 }
 
 const char *BPlusNode::getKey(int i) {
     Location loc = getKeyLoc(i);
     assert(!loc.isNull());
+    resetData();
     return reinterpret_cast<char *>(db_store_->dataRecordAt(
         loc)->getData()); // Be cautious that memory may be deallocated
 }
@@ -145,5 +147,8 @@ void BPlusNode::removeValue(int i) {
     data->Leaf.values[i].init();
 }
 
+void BPlusNode::resetData() {
+    data = db_store_->indexRecordAt(location_)->getData();
+}
 
 }

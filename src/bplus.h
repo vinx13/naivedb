@@ -38,7 +38,7 @@ private:
     // return value is guaranteed to be a valid location
     Location findLeaf(const char *key, std::stack<Location> *parents);
 
-    Location insertAtLeaf(BPlusNode &leaf, const Location &key_loc, const Location &value_loc, int index);
+    Location insertAtLeaf(const Location &leaf_loc, const Location &key_loc, const Location &value_loc, int index);
 
     void rcopyKV(BPlusNode *src, int isrc, BPlusNode *dest, int idest);
 

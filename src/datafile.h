@@ -23,6 +23,12 @@ public:
 
     void collect(const Location &location);
 
+protected:
+
+    virtual int getHeaderSize() override { return sizeof(DataFileHeader); }
+
+    virtual int getFileSize() override { return DefaultDataFileSize; }
+
 private:
 
     virtual void initFile(int file_no);

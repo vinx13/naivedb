@@ -6,7 +6,7 @@
 namespace naivedb {
 
 
-IndexFileMgr::IndexFileMgr(const std::string &filename) : FileMgr(filename, DefaultIndexFileSize) {
+IndexFileMgr::IndexFileMgr(const std::string &filename) : FileMgr(filename) {
 }
 
 IndexFileHeader *IndexFileMgr::getIndexHeader() {
@@ -37,7 +37,7 @@ void IndexFileMgr::initFile(int file_no) {
     IndexRecord *cur = reinterpret_cast<IndexRecord *>(get({file_no, 0}));
 
     // void *end = reinterpret_cast<void *>(reinterpret_cast<char *>(cur) + DefaultIndexFileSize);
-    int cur_ofs = file_no == 0 ? sizeof(IndexFileHeader) : 0;
+    int cur_ofs = 0;
     const int record_size = sizeof(IndexRecord), size = DefaultIndexFileSize;
     while (true) {
         int next_ofs = cur_ofs + record_size;

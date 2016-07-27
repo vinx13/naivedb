@@ -54,7 +54,8 @@ Location BPlus::findLeaf(const char *key, std::stack<Location> *parents) {
 
 void BPlus::set(const char *key, const void *value, int len, bool overwrite) {
     std::stack<Location> parents;
-    BPlusNode leaf(findLeaf(key, &parents), db_store_);
+    Location leaf_loc = findLeaf(key, &parents);
+    BPlusNode leaf(leaf_loc,db_store_);
     assert(leaf.isLeaf());
     int index = leaf.upperBound(key, false);
     bool dup = false;
@@ -77,14 +78,15 @@ void BPlus::set(const char *key, const void *value, int len, bool overwrite) {
     Location key_loc = db_store_->saveData(reinterpret_cast<const void *>(key), std::strlen(key) + 1),
         value_loc = db_store_->saveData(value, len);
 
-    Location new_node_loc = insertAtLeaf(leaf, key_loc, value_loc, index);
+    Location new_node_loc = insertAtLeaf(leaf_loc, key_loc, value_loc, index);
     if (!new_node_loc.isNull()) {
         insertAtInternal(BPlusNode(new_node_loc, db_store_).getKeyLoc(0), new_node_loc, &parents);
     }
 }
 
 
-Location BPlus::insertAtLeaf(BPlusNode &leaf, const Location &key_loc, const Location &value_loc, int index) {
+Location BPlus::insertAtLeaf(const Location &leaf_loc, const Location &key_loc, const Location &value_loc, int index) {
+    BPlusNode leaf(leaf_loc, db_store_);
     if (!leaf.isFull()) {
         assert(index >= 0);
         assert(index < TreeOrder - 1);
@@ -186,6 +188,7 @@ void BPlus::insertAtInternal(Location key, Location child, std::stack<Location> 
         new_node.asInternal();
         new_node.init();
 
+        parent = BPlusNode(parent_loc, db_store_); // data pointer of parent may be deallocated
         int mid = TreeOrder / 2;
 
         if (index == mid) {

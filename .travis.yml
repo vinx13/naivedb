@@ -19,7 +19,6 @@ script:
   - cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ..
   - make
   - make test
-  - travis_wait 120 ./db_benchmark
   - travis_wait 120 ./db_benchmark2
 addons:
   apt:

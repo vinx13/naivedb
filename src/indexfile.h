@@ -27,6 +27,9 @@ public:
 
     IndexFileHeader *getIndexHeader();
 
+protected:
+    virtual int getHeaderSize() override { return sizeof(IndexFileHeader);}
+    virtual int getFileSize() override { return DefaultIndexFileSize; }
 
 private:
     virtual void initFile(int file_no);;

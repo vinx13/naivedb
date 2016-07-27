@@ -3,7 +3,7 @@
 namespace naivedb {
 
 
-FileMgr::FileMgr(const std::string &prefix, int file_size) : prefix_(prefix), file_size_(file_size) {
+FileMgr::FileMgr(const std::string &prefix) : prefix_(prefix) {
 }
 
 FileMgr::~FileMgr() {
@@ -40,7 +40,7 @@ void FileMgr::createFile() {
     int file_no = getFileHeader()->num_files;
     MemoryMappedFile *file = new MemoryMappedFile(getFileName(file_no));
     assert(!file->isExist());
-    file->create(file_size_);
+    file->create(getFileSize());
     files_.push_back(file);
     getFileHeader()->num_files++;
     initFile(file_no);
@@ -61,7 +61,7 @@ void FileMgr::init() {
         FileHeader *header = getFileHeader();
         openAllFiles(header->num_files);
     } else {
-        file->create(file_size_);
+        file->create(getHeaderSize());
         initHeader();
     }
 }

@@ -3,11 +3,11 @@
 namespace naivedb {
 
 
-DataFileMgr::DataFileMgr(const std::string &filename) : FileMgr(filename, DefaultDataFileSize) {
+DataFileMgr::DataFileMgr(const std::string &filename) : FileMgr(filename) {
 }
 
 void DataFileMgr::initFile(int file_no) {
-    int start = file_no == 0 ? sizeof(DataFileHeader) : 0;
+    int start = 0;
     DataRecord *first = recordAt({file_no, start});
     first->block_size = DefaultDataFileSize - sizeof(first->block_size);
     addToHead({file_no, start});
@@ -52,9 +52,9 @@ DataFileHeader *DataFileMgr::getDataHeader() {
 }
 
 void DataFileMgr::removeEmptyLocation(int bucket) {
-    DataFileHeader *header = getDataHeader();
-    assert(!header->empty_heads[bucket].isNull());
-    header->empty_heads[bucket] = recordAt(header->empty_heads[bucket])->next;
+    assert(!getDataHeader()->empty_heads[bucket].isNull());
+    Location next = recordAt(getDataHeader()->empty_heads[bucket])->next;
+    getDataHeader()->empty_heads[bucket] = next;
 }
 
 Location DataFileMgr::getFreeLocation(int size_to_alloc) {
@@ -107,17 +107,17 @@ Location DataFileMgr::alloc(int min_size) {
 
 void DataFileMgr::addToHead(const Location &loc) {
     assert(!loc.isNull());
-    DataFileHeader *header = getDataHeader();
-    DataRecord *record = recordAt(loc);
 
-    if(!isReusableSize(record->block_size))
+    int block_size = recordAt(loc)->block_size;
+    if(!isReusableSize(block_size))
         return; // FIXME: we should make sure that the record is always reuseable
 
-    int bucket = getSuggestedBucketPut(record->block_size);
+    int bucket = getSuggestedBucketPut(block_size);
 
     assert(bucket >= 0);
-    record->next = header->empty_heads[bucket];
-    header->empty_heads[bucket] = loc;
+    Location next = getDataHeader()->empty_heads[bucket];
+    recordAt(loc)->next = next;
+    getDataHeader()->empty_heads[bucket] = loc;
 }
 
 int DataFileMgr::getSuggestedBucketFetch(int min_size) const {
