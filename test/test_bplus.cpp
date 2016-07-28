@@ -65,6 +65,7 @@ TEST(BPlusTest, SimpleTest) {
     for (auto &s:items) {
         int len;
         EXPECT_NO_THROW((len = bplus.get(s.first.c_str(), reinterpret_cast<void *>(buf))));
+        EXPECT_EQ(len, sizeof(int));
         EXPECT_EQ(0, std::memcmp(buf, &s.second, len));
     }
 
