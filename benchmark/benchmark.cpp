@@ -10,8 +10,6 @@
 
 using namespace naivedb;
 
-
-
 static void Write(benchmark::State &state) {
     Database database(std::tmpnam(nullptr));
     const int KeySize = 16, ValueSize = 100;
@@ -34,11 +32,13 @@ static void Read(benchmark::State &state) {
 
     const int KeySize = 16, ValueSize = 100;
     static std::map<std::string ,std::string> items;
+    static std::vector<std::string> keys;
 
     if(!setup){
 
         for(int i = 0;i < 1000000; i++){
             const std::string key = generateRandomString(KeySize - 1), value = generateRandomString(ValueSize);
+            keys.push_back(key);
             items[key] = value;
             database.set(key, value.c_str(), ValueSize, true);
         }
@@ -49,9 +49,7 @@ static void Read(benchmark::State &state) {
     while(state.KeepRunning()) {
         for (int i = 0; i < state.range_x(); i++) {
             state.PauseTiming();
-            auto it = items.begin();
-            std::advance(it, rand() % items.size());
-            const std::string key = it->first, value = it->second;
+            std::string key = keys.at(std::rand()%keys.size());
             state.ResumeTiming();
 
             database.get(key, buf);
@@ -61,11 +59,8 @@ static void Read(benchmark::State &state) {
     state.SetBytesProcessed((KeySize+ValueSize) * state.iterations() * state.range_x());
 }
 
-static void Remove(benchmark::State &state) {
 
-}
-
-BENCHMARK(Write)->Range(2, 1<<20);
+//BENCHMARK(Write)->Range(2, 1<<20);
 BENCHMARK(Read)->Range(2, 1<<20);
 
 BENCHMARK_MAIN();
