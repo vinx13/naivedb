@@ -250,7 +250,6 @@ void BPlus::remove(const char *key) {
     leaf.removeValue(index);
 
     lcopyKV(&leaf, index + 1, &leaf, index);
-
 }
 
 

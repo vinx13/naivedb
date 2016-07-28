@@ -65,7 +65,7 @@ static void Remove(benchmark::State &state) {
 
 }
 
-BENCHMARK(Write)->Range(2, 1<<15);
-BENCHMARK(Read)->Range(2, 1<<15);
+BENCHMARK(Write)->Range(2, 1<<20);
+BENCHMARK(Read)->Range(2, 1<<20);
 
 BENCHMARK_MAIN();
