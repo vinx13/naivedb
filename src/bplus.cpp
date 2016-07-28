@@ -138,8 +138,8 @@ void BPlus::rcopyKV(BPlusNode *src, int isrc, BPlusNode *dest, int idest) {
     }
 }
 
-void BPlus::rcopyK(BPlusNode *src, int isrc, BPlusNode *dest, int idest) {
-    int i = TreeOrder - 1;
+void BPlus::rcopyK(BPlusNode *src, int isrc, BPlusNode *dest, int idest, int start) {
+    int i = start + 1;
     while (--i >= isrc && src->getKeyLoc(i).isNull());
 
     int n = i - isrc + 1;
@@ -150,8 +150,8 @@ void BPlus::rcopyK(BPlusNode *src, int isrc, BPlusNode *dest, int idest) {
     }
 }
 
-void BPlus::rcopyC(BPlusNode *src, int isrc, BPlusNode *dest, int idest) {
-    int i = TreeOrder;
+void BPlus::rcopyC(BPlusNode *src, int isrc, BPlusNode *dest, int idest, int start) {
+    int i = start + 1;
     while (--i >= isrc && src->getChildLoc(i).isNull());
 
     int n = i - isrc + 1;
@@ -200,8 +200,8 @@ void BPlus::insertAtInternal(Location key, Location child, std::stack<Location> 
         } else if (index < mid) {
             rcopyK(&parent, mid, &new_node, 0);
             rcopyC(&parent, mid, &new_node, 0);
-            rcopyK(&parent, index, &parent, index + 1);
-            rcopyC(&parent, index + 1, &parent, index + 2);
+            rcopyK(&parent, index, &parent, index + 1, mid - 1);
+            rcopyC(&parent, index + 1, &parent, index + 2, mid - 1);
             parent.addKey(index, key);
             parent.addChild(index + 1, child);
             key = parent.getKeyLoc(mid);
@@ -210,8 +210,8 @@ void BPlus::insertAtInternal(Location key, Location child, std::stack<Location> 
         } else {
             rcopyK(&parent, index, &new_node, index - mid);
             rcopyC(&parent, index + 1, &new_node, index - mid + 1);
-            rcopyK(&parent, mid + 1, &new_node, 0);
-            rcopyC(&parent, mid + 1, &new_node, 0);
+            rcopyK(&parent, mid + 1, &new_node, 0, index - 1);
+            rcopyC(&parent, mid + 1, &new_node, 0, index);
             new_node.addKey(index - mid - 1, key);
             new_node.addChild(index - mid, child);
 

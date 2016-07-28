@@ -47,9 +47,9 @@ private:
     // make a new node < root_, key, child > as new root
     void makeNewRoot(const Location &key, const Location &child);
 
-    void rcopyK(BPlusNode *src, int isrc, BPlusNode *dest, int idest);
+    void rcopyK(BPlusNode *src, int isrc, BPlusNode *dest, int idest, int start = TreeOrder - 2);
 
-    void rcopyC(BPlusNode *src, int isrc, BPlusNode *dest, int idest);
+    void rcopyC(BPlusNode *src, int isrc, BPlusNode *dest, int idest, int start = TreeOrder - 1);
 
     void lcopyKV(BPlusNode *src, int isrc, BPlusNode *dest, int idest);
 };

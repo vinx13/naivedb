@@ -1,6 +1,7 @@
 #include <cstring>
 
 #include "bplusnode.h"
+#include "bplusdata.h"
 
 
 namespace naivedb {
@@ -10,6 +11,8 @@ BPlusNode::BPlusNode(const Location &location, DBStore *db_store) : db_store_(db
     assert(db_store_);
     resetData();
 }
+
+bool BPlusNode::isEmpty() { return data->keys[0].isNull(); }
 
 bool BPlusNode::isFull() { return !data->keys[TreeOrder - 1 - 1].isNull(); }
 
@@ -57,7 +60,8 @@ Location BPlusNode::getKeyLoc(int i) {
 }
 
 int BPlusNode::find(const char *key) {
-    return linearSearch(0, TreeOrder - 1, key); // TODO: binary search would be better
+    return binarySearch(0, TreeOrder - 1, key);
+    //return linearSearch(0, TreeOrder - 1, key); // TODO: binary search would be better
 }
 
 int BPlusNode::linearSearch(int lo, int hi, const char *key) {
@@ -68,6 +72,18 @@ int BPlusNode::linearSearch(int lo, int hi, const char *key) {
             return lo;
         } else if (cmp > 0) break;
         ++lo;
+    }
+    return -1;
+}
+
+int BPlusNode::binarySearch(int lo, int hi, const char *key) {
+    while (lo < hi) {
+        int mid = (lo + hi) / 2;
+        if(getKeyLoc(mid).isNull()) {hi=mid;continue;}
+        int cmp = std::strcmp(getKey(mid), key);
+        if(cmp < 0) lo = mid + 1;
+        else if(cmp > 0) hi = mid;
+        else return mid;
     }
     return -1;
 }

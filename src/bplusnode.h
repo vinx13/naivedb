@@ -82,6 +82,10 @@ private:
     char *copyKey(const Location &location) const;
 
     void resetData();
+
+    int binarySearch(int lo, int hi, const char *key);
+
+    bool isEmpty();
 };
 
 
