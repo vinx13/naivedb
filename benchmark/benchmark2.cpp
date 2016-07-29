@@ -4,6 +4,9 @@
 #include <iostream>
 #include <random>
 #include <set>
+#include <algorithm>
+#include <vector>
+#include <chrono>
 
 #include "database.h"
 #include "util.h"
@@ -46,7 +49,7 @@ void MixedTest(int nrec) {
     const int ValueSize = 100;
 
     DatabaseOption option;
-    option.memory_limitation = 1024 * 1024 * 1024;
+    option.memory_limitation = 1024 * 1024 * 128;
     Database database(std::tmpnam(nullptr), option);
 
     std::vector<std::string> keys;
@@ -154,7 +157,7 @@ void MixedTest(int nrec) {
 int main() {
     int nrec = 2;
     int max_nrec = 1 << 21;
-    while(nrec < max_nrec) {
+    /*while(nrec < max_nrec) {
         total = 0;
         int iteration = 1000;
         for(int i = 0; i < iteration; i++) {
@@ -163,6 +166,7 @@ int main() {
         double mean_time = total / iteration;
         std::cout << "nrec = " << nrec << "    time = " << mean_time << std::endl;
         nrec <<= 1;
-    }
+    }*/
+    MixedTest(1000000);
     return  0;
 }
