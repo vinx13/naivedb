@@ -47,7 +47,7 @@ target_link_libraries(unittest gtest gtest_main naivedb)
 add_executable(db_benchmark benchmark/benchmark.cpp benchmark/util.cpp)
 add_executable(db_benchmark2 benchmark/benchmark2.cpp benchmark/util.cpp)
 target_link_libraries(db_benchmark naivedb benchmark)
-target_link_libraries(db_benchmark2 naivedb)
+target_link_libraries(db_benchmark2 naivedb benchmark)
 
 cmake_policy(PUSH)
 if (POLICY CMP0037)

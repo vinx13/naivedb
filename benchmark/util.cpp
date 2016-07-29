@@ -16,3 +16,9 @@ std::string generateRandomString(size_t length)
     std::generate_n(std::back_inserter(result), length, generator);
     return result;
 }
+
+std::string numberToString(int n, int size) {
+    std::string s = std::to_string(n);
+    s.insert(0,size - s.size(), '0');
+    return s;
+}

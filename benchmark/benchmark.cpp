@@ -60,7 +60,7 @@ static void Read(benchmark::State &state) {
 }
 
 
-//BENCHMARK(Write)->Range(2, 1<<20);
+BENCHMARK(Write)->Range(2, 1<<20);
 BENCHMARK(Read)->Range(2, 1<<20);
 
 BENCHMARK_MAIN();
