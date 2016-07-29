@@ -47,6 +47,13 @@ int main() {
 }  
 ```  
 
+# Build
+```
+cmake -DCMAKE_BUILD_TYPE=Release .
+cmake --build .
+```
+
+
 # Implementation Notes
 
 ## Architecture
@@ -73,7 +80,7 @@ struct IndexRecord {
 };
 
 ```
-Empty index records are stored as a linked list with head of the list stored in the header. Each non-empty index record represents a single node in B+ tree. Root of the B+ tree is stored in the header. Data of nodes in B+ tree stored in index records is consisted of a bool field indicating whether it is leaf node, and locations of keys or values in data files. New index files will be created if no empty records exist in the linked list when allocating new index records.
+Empty index records are stored as a linked list with head of the list stored in the header. Each non-empty index record represents a single node in B+ tree. Root of the B+ tree is stored in the header. Data of nodes in B+ tree stored in index records is consisted of a bool field indicating whether it is leaf node, and locations of child nodes in index files, or keys or values in data files. New index files will be created if no empty records exist in the linked list when allocating new index records.
 
 The order of B+ tree is 8 as benchmark shows the best performance in this case. Although larger order reduces tree height of the tree, it becomes inefficient for some linear algorithms used during construction and adjustment of B+ tree.
 
@@ -103,7 +110,7 @@ After a empty record with the right size is found, we split the record into two 
 
 When a entry is removed from database, the record is simply added to a linked list containing other empty records.   
 
-Besides, byte alignment technique is used for better I/O performance. The size of allocated record is always rounded up to times of four bytes.
+Besides, byte alignment technique is used for better I/O performance. The size of record to allocate is always rounded up to times of four bytes.
 
 ## I/O Module
 I/O module provides uniform cross-platform interface to system file I/O APIs.  
@@ -208,6 +215,9 @@ Database(const std::string &name, const DatabaseOption &option);
 Open database or create if not exists.  
 name: name of the database to be opened or created.  
 option: user settings when creating or opening database.  
+
+### destructor
+Close the opened database and all releated files.
 
 ### method get
 
