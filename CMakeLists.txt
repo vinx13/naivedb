@@ -38,8 +38,9 @@ add_subdirectory("extern/googletest" "${CMAKE_CURRENT_BINARY_DIR}/googletest")
 add_subdirectory("extern/benchmark" "${CMAKE_CURRENT_BINARY_DIR}/benchmark")
 include_directories("extern/googletest/include" "extern/benchmark/include" src)
 
-add_executable(example example/main.cpp)
+add_executable(example example/example.cpp)
 target_link_libraries(example naivedb)
+a
 
 add_executable(unittest ${TEST_FILES})
 target_link_libraries(unittest gtest gtest_main naivedb)
