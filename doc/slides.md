@@ -34,7 +34,7 @@
 
 
 ## Architecture
-![Architecture](image/Architecture.png)  
+![Architecture](image/architecture.png)  
 
 ## Files
 * index files (B+ tree)
