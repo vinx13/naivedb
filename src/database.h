@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "exception.h"
+
 namespace naivedb {
 
 class DBStore;

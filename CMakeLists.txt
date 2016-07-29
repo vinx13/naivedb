@@ -40,7 +40,8 @@ include_directories("extern/googletest/include" "extern/benchmark/include" src)
 
 add_executable(example example/example.cpp)
 target_link_libraries(example naivedb)
-a
+add_executable(demo example/demo.cpp)
+target_link_libraries(demo naivedb)
 
 add_executable(unittest ${TEST_FILES})
 target_link_libraries(unittest gtest gtest_main naivedb)
