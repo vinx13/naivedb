@@ -7,7 +7,25 @@
 
 using namespace naivedb;
 
-TEST(BPlusNodeTest, GetKey) {
+class BPlusNodeTest : public ::testing::Test {
+
+protected:
+    virtual void SetUp() {
+        MemoryMappedFile::setMemoryLimitation(1024*1024*1024);
+    }
+
+};
+
+class BPlusTest : public ::testing::Test {
+
+protected:
+    virtual void SetUp() {
+        MemoryMappedFile::setMemoryLimitation(1024*1024*1024);
+    }
+
+};
+
+TEST_F(BPlusNodeTest, GetKey) {
     DBStore db_store(std::tmpnam(nullptr));
     const char key[] = "this is key";
     Location loc = db_store.saveData(reinterpret_cast<const void *>(key), std::strlen(key) + 1);
@@ -20,7 +38,7 @@ TEST(BPlusNodeTest, GetKey) {
 
 }
 
-TEST(BPlusNodeTest, Find) {
+TEST_F(BPlusNodeTest, Find) {
     const char *key1 = "100", *key2 = "200", *key3 = "300", *key4 = "400";
 
     DBStore db_store(std::tmpnam(nullptr));
@@ -45,7 +63,7 @@ TEST(BPlusNodeTest, Find) {
 
 }
 
-TEST(BPlusTest, SimpleTest) {
+TEST_F(BPlusTest, SimpleTest) {
     std::srand(0);
     DBStore db_store(std::tmpnam(nullptr));
     BPlus bplus(&db_store);
