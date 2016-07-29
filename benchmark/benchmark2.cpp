@@ -161,7 +161,7 @@ int main() {
             MixedTest(nrec);
         }
         double mean_time = total / iteration;
-        std::cout << "nrec = " << nrec << "    time = " << mean_time;
+        std::cout << "nrec = " << nrec << "    time = " << mean_time << std::endl;
         nrec <<= 1;
     }
     return  0;
