@@ -49,7 +49,7 @@ void MixedTest(int nrec) {
     const int ValueSize = 100;
 
     DatabaseOption option;
-    option.memory_limitation = 1024 * 1024 * 128;
+    option.memory_limitation = 1024 * 1024 * 1024;
     Database database(std::tmpnam(nullptr), option);
 
     std::vector<std::string> keys;
