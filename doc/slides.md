@@ -25,7 +25,7 @@
   db.set<int>("2", 2, false);
 
   // read
-  int value_length = db->get("1", (void *)&value);
+  int value_length = db.get("1", (void *)&value);
   db.get<int>("2"); // return 2
 
   // remove
@@ -122,14 +122,14 @@ Insert nrec entries into an empty database
 ```
 nrec   CPU Time (ns)  Iterations
 --------------------------------------------
-2           13808     57440  16.0239MB/s   141.452k items/s
-8           59565     10000   14.858MB/s    131.16k items/s
-64         387433      1858  18.2743MB/s   161.318k items/s
-512       2654426       265  21.3382MB/s   188.365k items/s
-4k       21391333        36  21.1826MB/s   186.992k items/s
-32k     168748400         5  21.4817MB/s   189.631k items/s
-256k   1440480000         1  20.1322MB/s   177.719k items/s
-1024k  6437704000         1  18.0188MB/s   159.063k items/s
+2           13808    57440  16.0239MB/s   141.452k items/s
+8           59565    10000   14.858MB/s    131.16k items/s
+64         387433     1858  18.2743MB/s   161.318k items/s
+512       2654426      265  21.3382MB/s   188.365k items/s
+4k       21391333       36  21.1826MB/s   186.992k items/s
+32k     168748400        5  21.4817MB/s   189.631k items/s
+256k   1440480000        1  20.1322MB/s   177.719k items/s
+1024k  6437704000        1  18.0188MB/s   159.063k items/s
 ```
 ## Writes Performance
 ![Write Performance](image/pfmn_insert.png)  
@@ -139,14 +139,14 @@ Perform nrec read operations in a database with one million entries
 ```
 nrec   CPU Time (ns)  Iterations
 --------------------------------------------
-2           13072     47620  16.9262MB/s   149.417k items/s
-8           39985     17188  22.1336MB/s   195.386k items/s
-64         305307      2310    23.19MB/s   204.712k items/s
-512       2614599       302  21.6632MB/s   191.234k items/s
-4k       18337323        31  24.7105MB/s   218.134k items/s
-32k     148186400         5  24.4624MB/s   215.944k items/s
-256k   1179927000         1  24.5778MB/s   216.963k items/s
-1024k  4726068000         1  24.5447MB/s   216.671k items/s
+2           13072    47620  16.9262MB/s   149.417k items/s
+8           39985    17188  22.1336MB/s   195.386k items/s
+64         305307     2310    23.19MB/s   204.712k items/s
+512       2614599      302  21.6632MB/s   191.234k items/s
+4k       18337323       31  24.7105MB/s   218.134k items/s
+32k     148186400        5  24.4624MB/s   215.944k items/s
+256k   1179927000        1  24.5778MB/s   216.963k items/s
+1024k  4726068000        1  24.5447MB/s   216.671k items/s
 ```
 ## Reads Performance
 ![Read Performance](image/pfmn_search.png)  
