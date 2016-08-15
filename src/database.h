@@ -19,7 +19,7 @@ class Database {
 
 public:
 
-    Database(const std::string &database, const DatabaseOption &option = DatabaseOption());
+    explicit Database(const std::string &database, const DatabaseOption &option = DatabaseOption());
 
     ~Database();
 
